@@ -257,7 +257,7 @@ jQuery(document).ready(function() {
 
 if ($action == 'info' && ! empty($id))
 {
-    print load_fiche_titre($langs->trans("MyProduct"));
+    print load_fiche_titre($langs->trans("MyLudo"));
     
     /*print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
     print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';

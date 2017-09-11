@@ -210,7 +210,7 @@ $reshook=$hookmanager->executeHooks('printFieldListSelect',$parameters);    // N
 $sql.=$hookmanager->resPrint;
 $sql=preg_replace('/, $/','', $sql);
 $sql.= " FROM ".MAIN_DB_PREFIX."produit as t";
-if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label)) $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."myobject_extrafields as ef on (t.rowid = ef.fk_object)";
+if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label)) $sql.= " INNER JOIN ".MAIN_DB_PREFIX."ludotheque as l on (t.fk_emplacement = l.rowid)";
 $sql.= " WHERE 1 IN (".getEntity('myobject').")";
 foreach($search as $key => $val)
 {
