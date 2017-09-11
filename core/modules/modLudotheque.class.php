@@ -264,7 +264,7 @@ class modLudotheque extends DolibarrModules
 		
 		$this->menu[$r++]=array(	'fk_menu'=>'fk_mainmenu=ludotheque,fk_leftmenu=ludotheque',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
                         		    'type'=>'left',			                // This is a Left menu entry
-                        		    'titre'=>'Liste des ludothèques',
+                        		    'titre'=>'Liste',
                         		    'mainmenu'=>'ludotheque',
                         		    'leftmenu'=>'nouvelleLudotheque',
                         		    'url'=>'/ludotheque/ludotheque_list.php',
@@ -305,7 +305,7 @@ class modLudotheque extends DolibarrModules
 		
 		$this->menu[$r++]=array(	'fk_menu'=>'fk_mainmenu=ludotheque,fk_leftmenu=produits',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
     								'type'=>'left',			                // This is a Left menu entry
-    								'titre'=>'Liste des produits',
+    								'titre'=>'Liste',
     								'mainmenu'=>'ludotheque',
     								'leftmenu'=>'listeProduits',
     								'url'=>'/ludotheque/produit_list.php',

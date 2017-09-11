@@ -75,8 +75,8 @@ class Produit extends CommonObject
      */
 	public $fields=array(
 	    'rowid'         =>array('type'=>'integer',      'label'=>'TechnicalID',      'enabled'=>1, 'visible'=>-1, 'notnull'=>true, 'index'=>true, 'position'=>1,  'comment'=>'Id'),
-	    'categorie'     =>array('type'=>'varchar(8)',   'label'=>'Categorie',        'enabled'=>1, 'visible'=>1,  'notnull'=>true),
 	    'libelle'       =>array('type'=>'varchar(255)', 'label'=>'Libelle',          'enabled'=>1, 'visible'=>1,  'notnull'=>true),
+	    'categorie'     =>array('type'=>'varchar(8)',   'label'=>'Categorie',        'enabled'=>1, 'visible'=>1,  'notnull'=>true),
 	    'description'   =>array('type'=>'varchar(255)', 'label'=>'Description',      'enabled'=>1, 'visible'=>1,  'notnull'=>true),
 	    'date_achat'    =>array('type'=>'datetime',     'label'=>'DateAchat',        'enabled'=>1, 'visible'=>1,  'notnull'=>true),
 	    'fk_emplacement'=>array('type'=>'integer',      'label'=>'Emplacement',      'enabled'=>1, 'visible'=>1,  'notnull'=>true, 'index'=>true),

@@ -298,10 +298,11 @@ if ($action == 'info' && ! empty($id))
                 print $object->libelle;
                 break;
             case 'description':
-                print $object->description;
+                print preg_replace('/\n/', '<br>', $object->description);
+                //print $object->description;
                 break;
             case 'date_achat':
-                print $object->date_achat;
+                print dol_print_date($db->jdate($object->date_achat), 'dayhour');
                 break;
             case 'fk_emplacement':
                 print $lib;
@@ -359,6 +360,7 @@ if ($action == 'create')
 	        print '</td></tr>';
 	    }
 	    // Sélection de la catgorie dans une liste déroulante
+	    // ----------------------------------- A CHANGER !! -----------------------------------
 	    else if (in_array($key, array('categorie')))
 	    {
 	        print '<tr><td class="titlefieldcreate fieldrequired">'.$langs->trans($val['label']).'</td>';
@@ -367,6 +369,13 @@ if ($action == 'create')
 	        $tabCat = array('Jeu' => 'Jeu', 'Film' => 'Film');
 	        print $form->selectarray('categorie', $tabCat, 'Jeu');
 	        
+	        print '</td></tr>';
+	    }
+	    else if (in_array($key, array('description')))
+	    {
+	        print '<tr><td class="titlefieldcreate fieldrequired">'.$langs->trans($val['label']).'</td>';
+	        
+	        print '<td><textarea class="quatrevingtpercent" name="'.$key.'" id="'.$key.'" style="height: 60px;"></textarea>';
 	        print '</td></tr>';
 	    }
 	    else
@@ -449,6 +458,13 @@ if (($id || $ref) && $action == 'edit')
 	        print '>Film</option>';
 	        
 	        print '</select></td></tr>';
+	    }
+	    else if (in_array($key, array('description')))
+	    {
+	        print '<tr><td class="titlefieldcreate fieldrequired">'.$langs->trans($val['label']).'</td>';
+	        
+	        print '<td><textarea class="quatrevingtpercent" name="'.$key.'" id="'.$key.'" style="height: 60px;">'.$object->$key.'</textarea>';
+	        print '</td></tr>';
 	    }
 	    else
 	    {
