@@ -71,4 +71,8 @@ else header('Cache-Control: no-cache');
 	/* ... */
 }
 
+div > a:hover { color: rgba(0, 0, 0, 1); }
+div > a:link { color: rgba(0,0,0,1); }
+div > a:visited { color: rgba(0,0,0,1); }
+
 

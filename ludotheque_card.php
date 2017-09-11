@@ -112,11 +112,17 @@ if (empty($reshook))
 
 	if ($cancel)
 	{
-		if ($action != 'addlink')
+		if ($action != 'addlink' && $action != 'update')
 		{
 			$urltogo=$backtopage?$backtopage:dol_buildpath('/ludotheque/ludotheque_list.php',1);
 			header("Location: ".$urltogo);
 			exit;
+		}
+		if ($action == 'update')
+		{
+		    $urltogo=$backtopage?$backtopage:dol_buildpath('/ludotheque/ludotheque_card.php?action=info&id='.$id,1);
+		    header("Location: ".$urltogo);
+		    exit;
 		}
 		if ($id > 0 || ! empty($ref)) $ret = $object->fetch($id,$ref);
 		$action='';
@@ -293,8 +299,8 @@ if ($action == 'info' && ! empty($id))
     
 //    print '<input type="submit" class="button" name="modifier" value="'.dol_escape_htmltag($langs->trans("Edit")).'"> &nbsp; ';
 //    print '<input type="submit" class="button" name="cancel" value="'.dol_escape_htmltag($langs->trans("Cancel")).'">';
-    print '<a class="butAction" href="ludotheque_card.php?action=edit&id='.$id.'">'.$langs->trans('Edit').'</a>';
-    print '<a class="butAction" href="ludotheque_list.php">Retour liste</a>';
+    print '<a class="button" href="ludotheque_card.php?action=edit&id='.$id.'">'.$langs->trans('Edit').'</a> &nbsp; ';
+    print '<a class="button" href="ludotheque_list.php">Retour liste</a>';
     print '</div>';
         
     print '</form>';
@@ -327,9 +333,8 @@ if ($action == 'create')
 	dol_fiche_end();
 	
 	print '<div class="center">';
-	print '<input type="submit" class="butAction" name="add" value="'.dol_escape_htmltag($langs->trans("Create")).'"> &nbsp; ';
-//	print '<input type="submit" class="button" name="cancel" value="'.dol_escape_htmltag($langs->trans("Cancel")).'">';
-    print '<a class="butAction" href="ludotheque_list.php">'.$langs->trans("Cancel").'</a>';
+	print '<input type="submit" class="button" name="add" value="'.dol_escape_htmltag($langs->trans("Create")).'"> &nbsp; ';
+	print '<input type="submit" class="button" name="cancel" value="'.dol_escape_htmltag($langs->trans("Cancel")).'">';
 	print '</div>';
 
 	print '</form>';
@@ -358,10 +363,10 @@ if (($id || $ref) && $action == 'edit')
 	dol_fiche_end();
 
 	print '<div class="center">';
-	print '<input type="submit" class="butAction" name="save" value="'.$langs->trans("Save").'"> &nbsp; ';
-//	print '<input type="submit" class="butAction" name="cancel" value="'.$langs->trans("Cancel").'">';
-	//print '<a class="butAction" href="ludotheque_card.php?action=update&id='.$id.'">'.$langs->trans('Save').'</a>';
-	print '<a class="butAction" href="ludotheque_card.php?action=info&id='.$id.'">Annuler</a>';
+	print '<input type="submit" class="button" name="save" value="'.$langs->trans("Save").'"> &nbsp; ';
+	print '<input type="submit" class="button" name="cancel" value="'.$langs->trans("Cancel").'">';
+//	print '<a class="button" href="ludotheque_card.php?action=update&id='.$id.'">'.$langs->trans('Save').'</a>';
+//	print '<a class="butAction" href="ludotheque_card.php?action=info&id='.$id.'">Annuler</a>';
 	print '</div>';
 
 	print '</form>';

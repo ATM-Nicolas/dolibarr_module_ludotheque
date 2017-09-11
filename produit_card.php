@@ -114,11 +114,17 @@ if (empty($reshook))
 
 	if ($cancel)
 	{
-		if ($action != 'addlink')
+		if ($action != 'addlink' && $action != 'update')
 		{
 			$urltogo=$backtopage?$backtopage:dol_buildpath('/ludotheque/produit_list.php',1);
 			header("Location: ".$urltogo);
 			exit;
+		}
+		if ($action == 'update')
+		{
+		    $urltogo=$backtopage?$backtopage:dol_buildpath('/ludotheque/produit_card.php?action=info&id='.$id,1);
+		    header("Location: ".$urltogo);
+		    exit;
 		}
 		if ($id > 0 || ! empty($ref)) $ret = $object->fetch($id,$ref);
 		$action='';
@@ -319,12 +325,12 @@ if ($action == 'info' && ! empty($id))
     
     print '<div class="center">';
     if(empty($object->date_achat))
-        print '<a class="butAction" href="produit_card.php?action=buy&id='.$id.'">Acheter</a>';
+        print '<a class="button" href="produit_card.php?action=buy&id='.$id.'">Acheter</a> &nbsp; ';
 //        print '<input type="submit" class="butAction" name="buy" value="'.dol_escape_htmltag($langs->trans("Buy")).'">';
 //    print '<input type="submit" class="button" name="modifier" value="'.dol_escape_htmltag($langs->trans("Edit")).'"> &nbsp; ';
-    print '<a class="butAction" href="produit_card.php?action=edit&id='.$id.'">Modifier</a>';
+    print '<a class="button" href="produit_card.php?action=edit&id='.$id.'">Modifier</a> &nbsp; ';
 //    print '<input type="submit" class="butAction" name="cancel" value="'.dol_escape_htmltag($langs->trans("Cancel")).'"></div>';
-    print '<a class="butAction" href="produit_list.php">Retour liste</a>';
+    print '<a class="button" href="produit_list.php">Retour liste</a>';
     print '</div>';
     
     print '</form>';
@@ -397,10 +403,8 @@ if ($action == 'create')
 	dol_fiche_end();
 	
 	print '<div class="center">';
-	print '<input type="submit" class="butAction" name="add" value="'.dol_escape_htmltag($langs->trans("Create")).'"> &nbsp;';
-//	print '<input type="submit" class="button" name="cancel" value="'.dol_escape_htmltag($langs->trans("Cancel")).'">';
-//  print '<a class="butAction" href="produit_card.php?action=add">Créer</a>';
-    print '<a class="butAction" href="produit_list.php">Annuler</a>';
+	print '<input type="submit" class="button" name="add" value="'.dol_escape_htmltag($langs->trans("Create")).'"> &nbsp;';
+	print '<input type="submit" class="button" name="cancel" value="'.dol_escape_htmltag($langs->trans("Cancel")).'">';
 	print '</div>';
 
 	print '</form>';
@@ -483,16 +487,12 @@ if (($id || $ref) && $action == 'edit')
 	dol_fiche_end();
 
 	print '<div class="center">';
-	print '<input type="submit" class="butAction" name="save" value="'.$langs->trans("Save").'"> &nbsp; ';
-//	print '<input type="submit" class="butAction" name="cancel" value="'.$langs->trans("Cancel").'">';
-	//print '<a class="butAction" href="produit_card.php?action=update&id='.$id.'">'.$langs->trans("Save").'</a>';
-	print '<a class="butAction" href="produit_card.php?action=info&id='.$id.'">Annuler</a>';
+	print '<input type="submit" class="button" name="save" value="'.$langs->trans("Save").'"> &nbsp; ';
+	print '<input type="submit" class="button" name="cancel" value="'.$langs->trans("Cancel").'">';
 	print '</div>';
 
 	print '</form>';
 }
-
-
 
 // Part to show record
 if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'create')))
