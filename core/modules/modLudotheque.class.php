@@ -93,8 +93,8 @@ class modLudotheque extends DolibarrModules
 		                        	'tpl' => 0,                                      	// Set this to 1 if module overwrite template dir (core/tpl)
 									'barcode' => 0,                                  	// Set this to 1 if module has its own barcode directory (core/modules/barcode)
 									'models' => 0,                                   	// Set this to 1 if module has its own models directory (core/modules/xxx)
-									'css' => array('/ludotheque/css/mymodule.css.php'),	// Set this to relative path of css file if module has its own css file
-	 								'js' => array('/ludotheque/js/mymodule.js.php'),          // Set this to relative path of js file if module must load a js on all pages
+									'css' => array('/ludotheque/css/ludotheque.css.php'),	// Set this to relative path of css file if module has its own css file
+	 								'js' => array('/ludotheque/js/ludotheque.js.php'),          // Set this to relative path of js file if module must load a js on all pages
 									'hooks' => array('hookcontext1','hookcontext2') 	// Set here all hooks context managed by module. You can also set hook context 'all'
 		                        );
 
@@ -234,7 +234,7 @@ class modLudotheque extends DolibarrModules
 								'titre'=>'Ludotheque',
 								'mainmenu'=>'ludotheque',
 								'leftmenu'=>'ludotheque',
-								'url'=>'/ludotheque/index.php',
+								'url'=>'/ludotheque/ludotheque_list.php',
 								'langs'=>'ludotheque@ludotheque',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 								'position'=>1000+$r,
 								'enabled'=>'1',	// Define condition to show or hide menu entry. Use '$conf->mymodule->enabled' if entry must be visible if module is enabled.
@@ -254,7 +254,7 @@ class modLudotheque extends DolibarrModules
                         		    'titre'=>'Ludothèque',
                         		    'mainmenu'=>'ludotheque',
                         		    'leftmenu'=>'ludotheque',
-                        		    'url'=>'/ludotheque/index.php',
+                        		    'url'=>'/ludotheque/ludotheque_list.php',
                         		    'langs'=>'ludotheque@ludotheque',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
                         		    'position'=>1000+$r,
                         		    'enabled'=>'1',  // Define condition to show or hide menu entry. Use '$conf->mymodule->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
@@ -264,7 +264,7 @@ class modLudotheque extends DolibarrModules
 		
 		$this->menu[$r++]=array(	'fk_menu'=>'fk_mainmenu=ludotheque,fk_leftmenu=ludotheque',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
                         		    'type'=>'left',			                // This is a Left menu entry
-                        		    'titre'=>'Liste ludothèque',
+                        		    'titre'=>'Liste des ludothèques',
                         		    'mainmenu'=>'ludotheque',
                         		    'leftmenu'=>'nouvelleLudotheque',
                         		    'url'=>'/ludotheque/ludotheque_list.php',
@@ -295,7 +295,7 @@ class modLudotheque extends DolibarrModules
                         		    'titre'=>'Produits',
                         		    'mainmenu'=>'ludotheque',
                         		    'leftmenu'=>'produits',
-                        		    'url'=>'/ludotheque/index.php',
+                        		    'url'=>'/ludotheque/produit_list.php',
                         		    'langs'=>'ludotheque@ludotheque',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
                         		    'position'=>1000+$r,
                         		    'enabled'=>'1',  // Define condition to show or hide menu entry. Use '$conf->mymodule->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
@@ -305,7 +305,7 @@ class modLudotheque extends DolibarrModules
 		
 		$this->menu[$r++]=array(	'fk_menu'=>'fk_mainmenu=ludotheque,fk_leftmenu=produits',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
     								'type'=>'left',			                // This is a Left menu entry
-    								'titre'=>'Liste produits',
+    								'titre'=>'Liste des produits',
     								'mainmenu'=>'ludotheque',
     								'leftmenu'=>'listeProduits',
     								'url'=>'/ludotheque/produit_list.php',

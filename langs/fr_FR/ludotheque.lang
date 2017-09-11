@@ -23,7 +23,17 @@ ModuleMyModuleName = Mon module
 ModuleMyModuleDesc = Description de mon module
 
 MyProduct = Mon Produit
+MyLudo = Ma Ludothèque
+MyProducts = Produits
+MyLudos = Ludothèques
+NewLudo = Nouvelle ludothèque
+
+Categorie = Catégorie
+Libelle = Libellé
+DateAchat = Date d'achat
+
 Buy = Acheter
+Create = Créer
 
 #
 # Page d'administration

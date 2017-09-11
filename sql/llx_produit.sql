@@ -20,7 +20,7 @@ CREATE TABLE llx_produit(
 	categorie VARCHAR(8),
 	libelle VARCHAR(255),
 	description VARCHAR(255),
-	date_achat DATETIME NOT NULL,
+	date_achat DATETIME,
 	fk_emplacement INTEGER
 	-- END MODULEBUILDER FIELDS
 ) ENGINE=innodb;

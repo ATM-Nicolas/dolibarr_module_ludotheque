@@ -253,10 +253,10 @@ if ($action == 'info' && ! empty($id))
 {
     print load_fiche_titre($langs->trans("MyProduct"));
     
-    print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
+    /*print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
     print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
     print '<input type="hidden" name="action" value="edit">';
-    print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
+    print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';*/
     
     $object->fetch($id);
     
@@ -272,7 +272,7 @@ if ($action == 'info' && ! empty($id))
         print ' class="titlefieldcreate';
         if ($val['notnull']) print ' fieldrequired';
         print '"';
-        print '>'.$langs->trans($val['label']).'</td><td><input class="flat" type="text" name="'.$key.'" value="';
+        print '>'.$langs->trans($val['label']).'</td><td>';
         
         switch($key)
         {
@@ -283,7 +283,7 @@ if ($action == 'info' && ! empty($id))
                 print '';
         }
         
-        print '" disabled></td></tr>';
+        print '</td></tr>';
     }
     print '</table>'."\n";
     
@@ -291,8 +291,11 @@ if ($action == 'info' && ! empty($id))
     
     print '<div class="center">';
     
-    print '<input type="submit" class="button" name="modifier" value="'.dol_escape_htmltag($langs->trans("Edit")).'"> &nbsp; ';
-    print '<input type="submit" class="button" name="cancel" value="'.dol_escape_htmltag($langs->trans("Cancel")).'"></div>';
+//    print '<input type="submit" class="button" name="modifier" value="'.dol_escape_htmltag($langs->trans("Edit")).'"> &nbsp; ';
+//    print '<input type="submit" class="button" name="cancel" value="'.dol_escape_htmltag($langs->trans("Cancel")).'">';
+    print '<a class="butAction" href="ludotheque_card.php?action=edit&id='.$id.'">'.$langs->trans('Edit').'</a>';
+    print '<a class="butAction" href="ludotheque_list.php">Retour liste</a>';
+    print '</div>';
         
     print '</form>';
 }
@@ -300,7 +303,7 @@ if ($action == 'info' && ! empty($id))
 // Part to create
 if ($action == 'create')
 {
-	print load_fiche_titre($langs->trans("NewObject", $langs->transnoentitiesnoconv("Produit")));
+	print load_fiche_titre($langs->trans($langs->transnoentitiesnoconv("NewLudo")));
 
 	print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
@@ -323,7 +326,11 @@ if ($action == 'create')
 
 	dol_fiche_end();
 	
-	print '<div class="center"><input type="submit" class="button" name="add" value="'.dol_escape_htmltag($langs->trans("Create")).'"> &nbsp; <input type="submit" class="button" name="cancel" value="'.dol_escape_htmltag($langs->trans("Cancel")).'"></div>';
+	print '<div class="center">';
+	print '<input type="submit" class="butAction" name="add" value="'.dol_escape_htmltag($langs->trans("Create")).'"> &nbsp; ';
+//	print '<input type="submit" class="button" name="cancel" value="'.dol_escape_htmltag($langs->trans("Cancel")).'">';
+    print '<a class="butAction" href="ludotheque_list.php">'.$langs->trans("Cancel").'</a>';
+	print '</div>';
 
 	print '</form>';
 }
@@ -333,7 +340,7 @@ if (($id || $ref) && $action == 'edit')
 {
     $object->fetch($id);
     
-	print load_fiche_titre($langs->trans("MyModule"));
+	print load_fiche_titre($langs->trans("MyLudo"));
 
 	print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
 	print '<input type="hidden" name="action" value="update">';
@@ -350,8 +357,11 @@ if (($id || $ref) && $action == 'edit')
 
 	dol_fiche_end();
 
-	print '<div class="center"><input type="submit" class="button" name="save" value="'.$langs->trans("Save").'">';
-	print ' &nbsp; <input type="submit" class="button" name="cancel" value="'.$langs->trans("Cancel").'">';
+	print '<div class="center">';
+	print '<input type="submit" class="butAction" name="save" value="'.$langs->trans("Save").'"> &nbsp; ';
+//	print '<input type="submit" class="butAction" name="cancel" value="'.$langs->trans("Cancel").'">';
+	//print '<a class="butAction" href="ludotheque_card.php?action=update&id='.$id.'">'.$langs->trans('Save').'</a>';
+	print '<a class="butAction" href="ludotheque_card.php?action=info&id='.$id.'">Annuler</a>';
 	print '</div>';
 
 	print '</form>';

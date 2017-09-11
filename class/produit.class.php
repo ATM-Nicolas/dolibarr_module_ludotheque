@@ -88,11 +88,10 @@ class Produit extends CommonObject
 	    'status'        =>array('type'=>'integer',      'label'=>'Status',           'enabled'=>1, 'visible'=>1,  'index'=>true,   'position'=>1000),
 		'date_creation' =>array('type'=>'datetime',     'label'=>'DateCreation',     'enabled'=>1, 'visible'=>-1, 'notnull'=>true, 'position'=>500),
 	    'tms'           =>array('type'=>'timestamp',    'label'=>'DateModification', 'enabled'=>1, 'visible'=>-1, 'notnull'=>true, 'position'=>500),
-		'import_key'    =>array('type'=>'varchar(14)',  'label'=>'ImportId',         'enabled'=>1, 'visible'=>-1,  'index'=>true,  'position'=>1000, 'nullifempty'=>1),*/
+		'import_key'    =>array('type'=>'varchar(14)',  'label'=>'ImportId',         'enabled'=>1, 'visible'=>-1,  'index'=>true,  'position'=>1000, 'nullifempty'=>1),
+*/
 	);
 	// END MODULEBUILDER PROPERTIES
-
-
 
 	// If this object has a subtable with lines
 
@@ -116,8 +115,6 @@ class Produit extends CommonObject
 	 * @var MyObjectLine[]     Array of subtable lines
 	 */
 	//public $lines = array();
-
-
 
 	/**
 	 * Constructor
@@ -194,9 +191,8 @@ class Produit extends CommonObject
 	    
 	    $obj = $this->db->fetch_object($res);
 	    if ($obj)
-	       $table[$obj->rowid] = $obj->libelle;
-	    
-	    return $table;
+	       return $obj->libelle;
+	    return false;
 	}
 	
 	function fetch($id = 0, $ref = '', $ref_ext='', $ignore_expression = 0)

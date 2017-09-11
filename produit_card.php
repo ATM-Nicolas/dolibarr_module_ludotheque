@@ -63,7 +63,7 @@ $id			= GETPOST('id', 'int');
 $action		= GETPOST('action', 'alpha');
 $cancel     = GETPOST('cancel', 'aZ09');
 $backtopage = GETPOST('backtopage', 'alpha');
-$buy        = GETPOST('buy', 'aZ09');
+
 $modifier   = GETPOST('modifier', 'aZ09');
 
 // Initialize technical objects
@@ -124,11 +124,12 @@ if (empty($reshook))
 		$action='';
 	}
 	
-	if ($buy)
+	if ($action == 'buy')
 	{
 	    // Modifier l'enregistrement pour ajouter la date d'achat
 	    //$object->fetch($id);
 	    $object->updateDate($id);
+	    $action = 'info';
 	}
 	
 	if ($modifier)
@@ -144,6 +145,8 @@ if (empty($reshook))
             if (in_array($key, array('rowid', 'date_achat'))) continue;	// Ignore special fields
 
             $object->$key=GETPOST($key,'alpha');
+            if ($key == 'description' && empty($object->$key)) $object->$key = '-';
+            
             if ($val['notnull'] && $object->$key == '')
             {
                 $error++;
@@ -181,6 +184,8 @@ if (empty($reshook))
 	    foreach ($object->fields as $key => $val)
         {
             $object->$key=GETPOST($key,'alpha');
+            if ($key == 'description' && empty($object->$key)) $object->$key = '-';
+            
             if (in_array($key, array('rowid', 'date_achat'))) continue;
             if ($val['notnull'] && $object->$key == '')
             {
@@ -260,14 +265,14 @@ if ($action == 'info' && ! empty($id))
 {
     print load_fiche_titre($langs->trans("MyProduct"));
     
-    print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
+    /*print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
     print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-    print '<input type="hidden" name="action" value="info">';
+    print '<input type="hidden" name="action" value="info">';*/
     
     //print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
     
     $object->fetch($id);
-    $tab = $object->getOneEmplacementLibelle($object->fk_emplacement);
+    $lib = $object->getOneEmplacementLibelle($object->fk_emplacement);
     
     print '<input type="hidden" name="id" value="'.$object->rowid.'">';
     
@@ -277,11 +282,12 @@ if ($action == 'info' && ! empty($id))
     foreach($object->fields as $key => $val)
     {
         if (in_array($key, array('rowid'))) continue;
+        if ($key == 'date_achat' && empty($object->$key)) continue;
         print '<tr><td';
         print ' class="titlefieldcreate';
         if ($val['notnull']) print ' fieldrequired';
         print '"';
-        print '>'.$langs->trans($val['label']).'</td><td><input class="flat" type="text" name="'.$key.'" value="';
+        print '>'.$langs->trans($val['label']).'</td><td>';
         
         switch($key)
         {
@@ -295,19 +301,16 @@ if ($action == 'info' && ! empty($id))
                 print $object->description;
                 break;
             case 'date_achat':
-                if (empty($object->date_achat))
-                    print '-';
-                else
-                    print $object->date_achat;
+                print $object->date_achat;
                 break;
             case 'fk_emplacement':
-                print $tab[$object->fk_emplacement];
+                print $lib;
                 break;
             default:
                 print '';
         }
         
-        print '" disabled></td></tr>';
+        print '</td></tr>';
     }
     print '</table>'."\n";
     
@@ -315,9 +318,13 @@ if ($action == 'info' && ! empty($id))
     
     print '<div class="center">';
     if(empty($object->date_achat))
-        print '<input type="submit" class="button" name="buy" value="'.dol_escape_htmltag($langs->trans("Ajouter")).'"> &nbsp; ';
+        print '<a class="butAction" href="produit_card.php?action=buy&id='.$id.'">Acheter</a>';
+//        print '<input type="submit" class="butAction" name="buy" value="'.dol_escape_htmltag($langs->trans("Buy")).'">';
 //    print '<input type="submit" class="button" name="modifier" value="'.dol_escape_htmltag($langs->trans("Edit")).'"> &nbsp; ';
-    print '<input type="submit" class="button" name="cancel" value="'.dol_escape_htmltag($langs->trans("Cancel")).'"></div>';
+    print '<a class="butAction" href="produit_card.php?action=edit&id='.$id.'">Modifier</a>';
+//    print '<input type="submit" class="butAction" name="cancel" value="'.dol_escape_htmltag($langs->trans("Cancel")).'"></div>';
+    print '<a class="butAction" href="produit_list.php">Retour liste</a>';
+    print '</div>';
     
     print '</form>';
 }
@@ -346,26 +353,21 @@ if ($action == 'create')
 	    {	        
 	        print '<tr><td class="titlefieldcreate fieldrequired">'.$langs->trans($val['label']).'</td>';
 	        print '<td>';
-	        print '<select class="flat" name="emplacement" id="emplacement">';
 	        
-	        foreach($tab as $key => $val)
-	        {
-	            print '<option value="'.$key.'">'.$val.'</option>';
-	        }
+	        print $form->selectarray('fk_emplacement', $tab, '1');
 	        
-	        print '</select></td></tr>';
+	        print '</td></tr>';
 	    }
 	    // Sélection de la catgorie dans une liste déroulante
 	    else if (in_array($key, array('categorie')))
 	    {
 	        print '<tr><td class="titlefieldcreate fieldrequired">'.$langs->trans($val['label']).'</td>';
 	        print '<td>';
-	        print '<select class="flat" name="categorie" id="categorie">';
 	        
-	        print '<option value="1">Jeu</option>';
-	        print '<option value="2">Film</option>';
+	        $tabCat = array('Jeu' => 'Jeu', 'Film' => 'Film');
+	        print $form->selectarray('categorie', $tabCat, 'Jeu');
 	        
-	        print '</select></td></tr>';
+	        print '</td></tr>';
 	    }
 	    else
 	    {
@@ -385,7 +387,12 @@ if ($action == 'create')
 
 	dol_fiche_end();
 	
-	print '<div class="center"><input type="submit" class="button" name="add" value="'.dol_escape_htmltag($langs->trans("Create")).'"> &nbsp; <input type="submit" class="button" name="cancel" value="'.dol_escape_htmltag($langs->trans("Cancel")).'"></div>';
+	print '<div class="center">';
+	print '<input type="submit" class="butAction" name="add" value="'.dol_escape_htmltag($langs->trans("Create")).'"> &nbsp;';
+//	print '<input type="submit" class="button" name="cancel" value="'.dol_escape_htmltag($langs->trans("Cancel")).'">';
+//  print '<a class="butAction" href="produit_card.php?action=add">Créer</a>';
+    print '<a class="butAction" href="produit_list.php">Annuler</a>';
+	print '</div>';
 
 	print '</form>';
 }
@@ -396,7 +403,7 @@ if (($id || $ref) && $action == 'edit')
     $tab = $object->getAllEmplacementLibelle($db);
     $object->fetch($id);
     
-	print load_fiche_titre($langs->trans("MyModule"));
+	print load_fiche_titre($langs->trans("MyProduct"));
 
 	print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
 	print '<input type="hidden" name="action" value="update">';
@@ -418,17 +425,10 @@ if (($id || $ref) && $action == 'edit')
 	    {
 	        print '<tr><td class="titlefieldcreate fieldrequired">'.$langs->trans($val['label']).'</td>';
 	        print '<td>';
-	        print '<select class="flat" name="fk_emplacement" id="emplacement">';
 	        
-	        foreach($tab as $key => $val)
-	        {
-	            print '<option value="'.$key.'"';
-	            if ($object->fk_emplacement == $key)
-	                print 'selected';
-	            print '>'.$val.'</option>';
-	        }
+	        print $form->selectarray('fk_emplacement', $tab, $object->fk_emplacement);
 	        
-	        print '</select></td></tr>';
+	        print '</td></tr>';
 	    }
 	    // Sélection de la catgorie dans une liste déroulante
 	    else if (in_array($key, array('categorie')))
@@ -466,8 +466,11 @@ if (($id || $ref) && $action == 'edit')
 
 	dol_fiche_end();
 
-	print '<div class="center"><input type="submit" class="button" name="save" value="'.$langs->trans("Save").'">';
-	print ' &nbsp; <input type="submit" class="button" name="cancel" value="'.$langs->trans("Cancel").'">';
+	print '<div class="center">';
+	print '<input type="submit" class="butAction" name="save" value="'.$langs->trans("Save").'"> &nbsp; ';
+//	print '<input type="submit" class="butAction" name="cancel" value="'.$langs->trans("Cancel").'">';
+	//print '<a class="butAction" href="produit_card.php?action=update&id='.$id.'">'.$langs->trans("Save").'</a>';
+	print '<a class="butAction" href="produit_card.php?action=info&id='.$id.'">Annuler</a>';
 	print '</div>';
 
 	print '</form>';

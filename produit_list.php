@@ -192,7 +192,7 @@ $now=dol_now();
 
 //$help_url="EN:Module_MyObject|FR:Module_MyObject_FR|ES:Módulo_MyObject";
 $help_url='';
-$title = $langs->trans('ListOf', $langs->transnoentitiesnoconv("MyObjects"));
+$title = $langs->trans('ListOf', $langs->transnoentitiesnoconv("MyProducts"));
 
 
 // Build and execute select
@@ -331,7 +331,7 @@ if ($sall)
 }
 
 $moreforfilter = '';
-$moreforfilter.='<div class="divsearchfield">';
+/*$moreforfilter.='<div class="divsearchfield">';
 $moreforfilter.= $langs->trans('MyFilter') . ': <input type="text" name="search_myfield" value="'.dol_escape_htmltag($search_myfield).'">';
 $moreforfilter.= '</div>';
 
@@ -346,7 +346,7 @@ if (! empty($moreforfilter))
 	print $moreforfilter;
     print '</div>';
 }
-
+*/
 $varpage=empty($contextpage)?$_SERVER["PHP_SELF"]:$contextpage;
 $selectedfields=$form->multiSelectArrayWithCheckbox('selectedfields', $arrayfields, $varpage);	// This also change content of $arrayfields
 $selectedfields.=$form->showCheckAddButtons('checkforselect', 1);
@@ -492,12 +492,15 @@ while ($i < min($num, $limit))
                 elseif ($key == 'ref') print $object->getNomUrl(1);
                 elseif ($key == 'status') print $object->getLibStatut(3);
                 else {
-                    if ($val['label'] == 'Categorie')
+                    if ($val['label'] == 'Libelle')
                     {
                         print '<a href="produit_card.php?action=info&id='.$obj->rowid.'">';
                         $lien = true;
                     }
-                    print $obj->$key;
+                    
+                    if ($val['label'] != 'Emplacement') print $obj->$key;
+                    else print $object->getOneEmplacementLibelle($obj->$key);
+                        
                     if ($lien === true)
                         print '</a>';
                 }
