@@ -35,6 +35,9 @@ DateAchat = Date d'achat
 Buy = Acheter
 Create = Créer
 
+EnterAnyLib = Entrez un libellé
+DictionaryCategorie = Catégories
+
 #
 # Page d'administration
 #

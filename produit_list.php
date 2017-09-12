@@ -230,6 +230,7 @@ foreach ($search_array_options as $key => $val)
         $sql .= natural_search('ef.'.$tmpkey, $crit, $mode);
     }
 }
+
 // Add where from hooks
 $parameters=array();
 $reshook=$hookmanager->executeHooks('printFieldListWhere',$parameters);    // Note that $action and $object may have been modified by hook

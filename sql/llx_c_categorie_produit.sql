@@ -13,12 +13,11 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
---INSERT INTO llx_produit VALUES (
---	1, 1, 'mydata'
---);
 
-INSERT INTO llx_c_categorie_produit VALUES (
-	NULL, 'Jeu', '1'
-),(
-	NULL, 'Film', '1'
-);
+CREATE TABLE llx_c_categorie_produit(
+	rowid INTEGER AUTO_INCREMENT PRIMARY KEY,
+	-- BEGIN MODULEBUILDER FIELDS
+	libelle VARCHAR(255),
+	active INTEGER
+	-- END MODULEBUILDER FIELDS
+) ENGINE=innodb;
