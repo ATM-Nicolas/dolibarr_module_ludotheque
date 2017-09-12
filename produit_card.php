@@ -372,7 +372,9 @@ if ($action == 'create')
 	        print '<tr><td class="titlefieldcreate fieldrequired">'.$langs->trans($val['label']).'</td>';
 	        print '<td>';
 	        
-	        $tabCat = array('Jeu' => 'Jeu', 'Film' => 'Film');
+	        $tabCat = $object->getAllCategories();
+	        
+	        //$tabCat = array('Jeu' => 'Jeu', 'Film' => 'Film');
 	        print $form->selectarray('categorie', $tabCat, 'Jeu');
 	        
 	        print '</td></tr>';
@@ -448,20 +450,12 @@ if (($id || $ref) && $action == 'edit')
 	    {
 	        print '<tr><td class="titlefieldcreate fieldrequired">'.$langs->trans($val['label']).'</td>';
 	        print '<td>';
-	        print '<select class="flat" name="categorie" id="categorie">';
 	        
+	        $tabCat = $object->getAllCategories();
 	        
-	        print '<option value="Jeu"';
-	        if ($object->categorie == 'Jeu')
-	            print 'selected';
-	        print '>Jeu</option>';
+	        print $form->selectarray('categorie', $tabCat, $object->$key);
 	        
-	        print '<option value="Film"';
-	        if ($object->categorie == 'Film')
-	            print 'selected';
-	        print '>Film</option>';
-	        
-	        print '</select></td></tr>';
+	        print '</td></tr>';
 	    }
 	    else if (in_array($key, array('description')))
 	    {

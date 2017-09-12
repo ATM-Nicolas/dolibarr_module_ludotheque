@@ -76,7 +76,7 @@ class Produit extends CommonObject
 	public $fields=array(
 	    'rowid'         =>array('type'=>'integer',      'label'=>'TechnicalID',      'enabled'=>1, 'visible'=>-1, 'notnull'=>true, 'index'=>true, 'position'=>1,  'comment'=>'Id'),
 	    'libelle'       =>array('type'=>'varchar(255)', 'label'=>'Libelle',          'enabled'=>1, 'visible'=>1,  'notnull'=>true),
-	    'categorie'     =>array('type'=>'varchar(8)',   'label'=>'Categorie',        'enabled'=>1, 'visible'=>1,  'notnull'=>true),
+	    'categorie'     =>array('type'=>'varchar(16)',   'label'=>'Categorie',        'enabled'=>1, 'visible'=>1,  'notnull'=>true),
 	    'description'   =>array('type'=>'varchar(255)', 'label'=>'Description',      'enabled'=>1, 'visible'=>1,  'notnull'=>true),
 	    'date_achat'    =>array('type'=>'datetime',     'label'=>'DateAchat',        'enabled'=>1, 'visible'=>1,  'notnull'=>true),
 	    'fk_emplacement'=>array('type'=>'integer',      'label'=>'Emplacement',      'enabled'=>1, 'visible'=>1,  'notnull'=>true, 'index'=>true),
@@ -124,6 +124,40 @@ class Produit extends CommonObject
 	public function __construct(DoliDB $db)
 	{
 		$this->db = $db;
+	}
+	
+	function getAllCategories()
+	{
+	    $limit = 26;
+	    $sql = 'SELECT libelle';
+	    $sql .= ' FROM '.MAIN_DB_PREFIX.'c_categorie_produit';
+	    $sql .= ' WHERE 1 IN (1) ORDER BY rowid ASC LIMIT '.$limit.';';
+	    
+	    $res = $this->db->query($sql);
+	    if (! $res)
+	    {
+	        dol_print_error($this->db);
+	        exit;
+	    }
+	    
+	    $num = $this->db->num_rows($res);
+	    if ($num == 0)
+	    {
+	        dol_print_error($this->db);
+	        exit;
+	    }
+	    
+	    $i = 0;
+	    $table = array();
+	    while($i < min($num, $limit))
+	    {
+	        $obj = $this->db->fetch_object($res);
+	        if ($obj)
+	            $table[$obj->libelle] = $obj->libelle;
+	        $i++;
+	    }
+	    
+	    return $table;
 	}
     
 	function getAllEmplacementLibelle(DoliDB $db)

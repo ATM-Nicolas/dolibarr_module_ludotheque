@@ -106,6 +106,9 @@ if ($user->societe_id > 0)
 // Initialize array of search criterias
 $search_all=trim(GETPOST("search_all",'alpha'));
 $search=array();
+
+// ----------------------------------- Là ! -----------------------------------
+
 foreach($object->fields as $key => $val)
 {
     if (GETPOST('search_'.$key,'alpha')) $search[$key]=GETPOST('search_'.$key,'alpha');
@@ -202,6 +205,7 @@ foreach($object->fields as $key => $val)
 {
     $sql.='t.'.$key.', ';
 }
+$sql.='l.libelle as lib_cat, ';
 // Add fields from extrafields
 foreach ($extrafields->attribute_label as $key => $val) $sql.=($extrafields->attribute_type[$key] != 'separate' ? ", ef.".$key.' as options_'.$key : '');
 // Add fields from hooks
@@ -210,12 +214,20 @@ $reshook=$hookmanager->executeHooks('printFieldListSelect',$parameters);    // N
 $sql.=$hookmanager->resPrint;
 $sql=preg_replace('/, $/','', $sql);
 $sql.= " FROM ".MAIN_DB_PREFIX."produit as t";
+
+$sql .= ' INNER JOIN '.MAIN_DB_PREFIX.'ludotheque as l ON t.fk_emplacement=l.rowid';
+
 if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label)) $sql.= " INNER JOIN ".MAIN_DB_PREFIX."ludotheque as l on (t.fk_emplacement = l.rowid)";
 $sql.= " WHERE 1 IN (".getEntity('myobject').")";
 foreach($search as $key => $val)
 {
-    if ($search[$key] != '') $sql.=natural_search($key, $search[$key], (($key == 'status')?2:($object->fields[$key]['type'] == 'integer'?1:0)));
+    if($key == 'fk_emplacement' && is_string($val))
+        $sql.=natural_search('l.libelle', $search[$key], 0);
+    else 
+        if ($search[$key] != '') $sql.=natural_search('t.'.$key, $search[$key], (($key == 'status')?2:($object->fields[$key]['type'] == 'integer'?1:0)));
 }
+
+
 if ($search_all) $sql.= natural_search(array_keys($fieldstosearchall), $search_all);
 // Add where from extra fields
 foreach ($search_array_options as $key => $val)
@@ -247,6 +259,7 @@ if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST))
 
 $sql.= $db->plimit($limit+1, $offset);
 
+
 dol_syslog($script_file, LOG_DEBUG);
 $resql=$db->query($sql);
 if (! $resql)
@@ -262,7 +275,7 @@ if ($num == 1 && ! empty($conf->global->MAIN_SEARCH_DIRECT_OPEN_IF_ONLY_ONE) && 
 {
     $obj = $db->fetch_object($resql);
     $id = $obj->rowid;
-    header("Location: ".DOL_URL_ROOT.'/mymodule/myobject_card.php?id='.$id);
+    header("Location: ".DOL_URL_ROOT.'/ludotheque/ludotheque_card.php?action=info&id='.$id);
     exit;
 }
 
