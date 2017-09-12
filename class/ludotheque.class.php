@@ -154,45 +154,6 @@ class Ludotheque extends CommonObject
 	    return true;
 	}
 	
-	function getAllProduitInOneLudo($ludo_id)
-	{
-	    $limit = 26;
-	    $sql = 'SELECT p.rowid, cp.libelle as libCat, p.libelle as libProduit, p.description, p.date_achat, l.libelle as libEmpl';
-	    $sql .= ' FROM '.MAIN_DB_PREFIX.'produit as p INNER JOIN '.MAIN_DB_PREFIX.'ludotheque as l ON p.fk_emplacement=l.rowid';
-	    $sql .= ' INNER JOIN '.MAIN_DB_PREFIX.'c_categorie_produit as cp ON p.fk_categorie=cp.rowid';
-	    $sql .= ' WHERE l.rowid='.$ludo_id.' ORDER BY p.rowid ASC LIMIT '.$limit.';';
-	    
-	    $res = $this->db->query($sql);
-	    if (! $res)
-	    {
-	        dol_print_error($this->db);
-	        exit;
-	    }
-	    
-	    $num = $this->db->num_rows($res);
-	    
-	    if ($num == 0) return false;
-	    
-	    $i = 0;
-	    $table = array();
-	    while($i < min($num, $limit))
-	    {
-	        $obj = $this->db->fetch_object($res);
-	        if ($obj)
-	        {
-	            foreach($obj as $key => $val)
-	            {
-	                $table[$key] = $val;
-	            }
-	        }
-	        $i++;
-	        var_dump($table);
-	        exit();
-	    }
-	    
-	    return $table;
-	}
-	
 	function update($id, $libelle)
 	{
 	    $sql = 'UPDATE '.MAIN_DB_PREFIX.'ludotheque as l';
@@ -337,7 +298,7 @@ class Ludotheque extends CommonObject
 /**
  * Class MyModuleObjectLine
  */
-class MyModuleObjectLine
+class LudothequeProduitLine
 {
 	/**
 	 * @var int ID

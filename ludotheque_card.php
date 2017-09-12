@@ -53,6 +53,7 @@ if (! $res) die("Include of main fails");
 
 include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
 dol_include_once('/ludotheque/class/ludotheque.class.php');
+dol_include_once('/ludotheque/class/produit.class.php');
 
 // Load traductions files requiredby by page
 $langs->loadLangs(array("mymodule","other"));
@@ -303,11 +304,100 @@ if ($action == 'info' && ! empty($id))
     print '<a class="button" href="ludotheque_list.php">Retour liste</a>';
     print '</div>';
         
-    print '</form>';
+    print '</form><br>';
+
+
+//  ---------------------------- Affichage la liste des produit de la ludothèque "$id" ----------------------------
+
+    print load_fiche_titre($langs->trans("ProduitsInLudo"));
     
-    //  ---------------------------- Afficher la liste des produit de la ludothèque "$id" ----------------------------
-    $tab = $object->getAllProduitInOneLudo($id);
-    var_dump($tab);
+    // --------------------- Requête ---------------------
+    $limit = 26;
+    $sql = 'SELECT p.rowid, p.libelle as libelle, cp.libelle as fk_categorie, p.description, p.date_achat, l.libelle as fk_emplacement';
+    $sql .= ' FROM '.MAIN_DB_PREFIX.'produit as p INNER JOIN '.MAIN_DB_PREFIX.'ludotheque as l ON p.fk_emplacement=l.rowid';
+    $sql .= ' INNER JOIN '.MAIN_DB_PREFIX.'c_categorie_produit as cp ON p.fk_categorie=cp.rowid';
+    $sql .= ' WHERE l.rowid='.$id.' ORDER BY p.rowid ASC LIMIT '.$limit.';';
+    
+    $res = $db->query($sql);
+    if (! $res)
+    {
+        dol_print_error($db);
+        exit;
+    }
+    
+    $num = $db->num_rows($res);
+    
+    if ($num == 0)
+    {
+        
+    }
+    
+    // --------------------- Affichage ---------------------
+    $produit = new Produit($db);
+    
+    $arrayfields=array();
+    foreach($produit->fields as $key => $val)
+    {
+        // If $val['visible']==0, then we never show the field
+        if (! empty($val['visible'])) $arrayfields['p.'.$key]=array('label'=>$val['label'], 'checked'=>(($val['visible']<0)?0:1), 'enabled'=>$val['enabled']);
+    }
+    
+    print '<div class="div-table-responsive">';
+    print '<table class="tagtable liste'.($moreforfilter?" listwithfilterbefore":"").'">'."\n";
+    
+    // --------------------- Titres ---------------------
+    print '<tr class="liste_titre">';
+    foreach($produit->fields as $key => $val)
+    {
+        $align='';
+        if (in_array($val['type'], array('date','datetime','timestamp'))) $align='center';
+        if (in_array($val['type'], array('timestamp'))) $align.='nowrap';
+        if (! empty($arrayfields['p.'.$key]['checked'])) print getTitleFieldOfList($arrayfields['p.'.$key]['label'], 0, $_SERVER['PHP_SELF'], 'p.'.$key, '', $param, ($align?'class="'.$align.'"':''), $sortfield, $sortorder, $align.' ')."\n";
+    }
+    
+    $i = 0;
+    $table = array();
+    while($i < min($num, $limit))
+    {
+        $obj = $db->fetch_object($res);
+        if (! $obj)
+        {
+            dol_print_error($db);
+            exit;
+        }
+        print '<tr class="oddeven">';
+        foreach($obj as $key => $val)
+        {
+            if ($key == 'rowid') continue;
+            if ($key == 'date_achat') print '<td class="center nowrap">';
+            else print '<td>';
+            
+            if ($key == 'libelle')
+            {
+                $lien == true;
+                print '<a href="produit_card.php?action=info&id='.$obj->rowid.'">';
+            }
+            
+            print $val;
+            
+            if ($lien === true) print '</a>';
+            print '</td>';
+        }
+        print '</tr>';
+        $i++;
+        
+    }
+    
+    // If no record found
+    if ($num == 0)
+    {
+        $colspan=1;
+        foreach($arrayfields as $key => $val) { if (! empty($val['checked'])) $colspan++; }
+        print '<tr><td colspan="'.$colspan.'" class="opacitymedium">'.$langs->trans("NoRecordFound").'</td></tr>';
+    }
+    
+    print '</table>'."\n";
+    print '</div>'."\n";
 }
 
 // Part to create
