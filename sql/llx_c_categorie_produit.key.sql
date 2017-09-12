@@ -15,11 +15,8 @@
 
 
 -- BEGIN MODULEBUILDER INDEXES
-ALTER TABLE llx_produit ADD INDEX idx_produit_emplacement (fk_emplacement);
-ALTER TABLE llx_produit ADD INDEX idx_produit_categorie (fk_categorie);
+--ALTER TABLE llx_produit ADD INDEX idx_produit_emplacement (fk_emplacement);
 -- END MODULEBUILDER INDEXES
 
-ALTER TABLE llx_produit ADD CONSTRAINT fk_produit_emplacement FOREIGN KEY (fk_emplacement) REFERENCES llx_ludotheque(rowid);
-ALTER TABLE llx_produit ADD CONSTRAINT fk_produit_categorie FOREIGN KEY (fk_categorie) REFERENCES llx_c_categorie_produit(rowid);
-ALTER TABLE llx_produit ADD UNIQUE(fk_categorie, libelle, fk_emplacement);
+ALTER TABLE llx_c_categorie_produit ADD UNIQUE(libelle);
 

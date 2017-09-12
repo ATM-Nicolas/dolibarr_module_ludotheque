@@ -304,6 +304,10 @@ if ($action == 'info' && ! empty($id))
     print '</div>';
         
     print '</form>';
+    
+    //  ---------------------------- Afficher la liste des produit de la ludothèque "$id" ----------------------------
+    $tab = $object->getAllProduitInOneLudo($id);
+    var_dump($tab);
 }
 
 // Part to create

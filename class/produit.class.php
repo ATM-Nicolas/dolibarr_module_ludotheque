@@ -76,7 +76,7 @@ class Produit extends CommonObject
 	public $fields=array(
 	    'rowid'         =>array('type'=>'integer',      'label'=>'TechnicalID',      'enabled'=>1, 'visible'=>-1, 'notnull'=>true, 'index'=>true, 'position'=>1,  'comment'=>'Id'),
 	    'libelle'       =>array('type'=>'varchar(255)', 'label'=>'Libelle',          'enabled'=>1, 'visible'=>1,  'notnull'=>true),
-	    'categorie'     =>array('type'=>'varchar(16)',   'label'=>'Categorie',        'enabled'=>1, 'visible'=>1,  'notnull'=>true),
+	    'fk_categorie'  =>array('type'=>'integer',      'label'=>'Categorie',        'enabled'=>1, 'visible'=>1,  'notnull'=>true),
 	    'description'   =>array('type'=>'varchar(255)', 'label'=>'Description',      'enabled'=>1, 'visible'=>1,  'notnull'=>true),
 	    'date_achat'    =>array('type'=>'datetime',     'label'=>'DateAchat',        'enabled'=>1, 'visible'=>1,  'notnull'=>true),
 	    'fk_emplacement'=>array('type'=>'integer',      'label'=>'Emplacement',      'enabled'=>1, 'visible'=>1,  'notnull'=>true, 'index'=>true),
@@ -129,7 +129,7 @@ class Produit extends CommonObject
 	function getAllCategories()
 	{
 	    $limit = 26;
-	    $sql = 'SELECT libelle';
+	    $sql = 'SELECT rowid, libelle';
 	    $sql .= ' FROM '.MAIN_DB_PREFIX.'c_categorie_produit';
 	    $sql .= ' WHERE 1 IN (1) ORDER BY rowid ASC LIMIT '.$limit.';';
 	    
@@ -153,11 +153,39 @@ class Produit extends CommonObject
 	    {
 	        $obj = $this->db->fetch_object($res);
 	        if ($obj)
-	            $table[$obj->libelle] = $obj->libelle;
+	            $table[$obj->rowid] = $obj->libelle;
 	        $i++;
 	    }
 	    
 	    return $table;
+	}
+	
+	function getOneCategorieLibelle($id)
+	{
+	    $limit = 26;
+	    $sql = 'SELECT rowid, libelle';
+	    $sql .= ' FROM '.MAIN_DB_PREFIX.'c_categorie_produit';
+	    $sql .= ' WHERE rowid='.$id.' ORDER BY rowid ASC LIMIT '.$limit.';';
+	    
+	    $res = $this->db->query($sql);
+	    if (! $res)
+	    {
+	        dol_print_error($this->db);
+	        exit;
+	    }
+	    
+	    $num = $this->db->num_rows($res);
+	    if ($num == 0)
+	    {
+	        dol_print_error($this->db);
+	        exit;
+	    }
+	    
+	    $table = array();
+	    $obj = $this->db->fetch_object($res);
+	    if ($obj)
+	        return $obj->libelle;
+	    return false;
 	}
     
 	function getAllEmplacementLibelle(DoliDB $db)
@@ -260,7 +288,7 @@ class Produit extends CommonObject
 	    $obj = $this->db->fetch_object($res);
 	    
 	    $this->rowid = $obj->rowid;
-	    $this->categorie = $obj->categorie;
+	    $this->fk_categorie = $obj->fk_categorie;
 	    $this->libelle = $obj->libelle;
 	    $this->description = $obj->description;
 	    $this->date_achat = $obj->date_achat;
@@ -284,10 +312,10 @@ class Produit extends CommonObject
 	    return true;
 	}
 	
-	function update($id, $cat, $lib, $desc, $fk_empl)
+	function update($id, $idCat, $lib, $desc, $fk_empl)
 	{
 	    $sql = 'UPDATE '.MAIN_DB_PREFIX.'produit as p';
-	    $sql .= ' SET p.categorie="'.$cat;
+	    $sql .= ' SET p.fk_categorie="'.$idCat;
 	    $sql .= '", p.libelle="'.$lib;
 	    $sql .= '", p.description="'.$desc;
 	    $sql .= '", p.fk_emplacement='.$fk_empl;

@@ -17,7 +17,7 @@
 CREATE TABLE llx_produit(
 	rowid INTEGER AUTO_INCREMENT PRIMARY KEY,
 	-- BEGIN MODULEBUILDER FIELDS
-	categorie VARCHAR(16),
+	fk_categorie INTEGER,
 	libelle VARCHAR(255),
 	description VARCHAR(255),
 	date_achat DATETIME,

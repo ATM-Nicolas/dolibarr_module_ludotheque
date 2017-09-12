@@ -137,7 +137,6 @@ if (is_array($extrafields->attribute_label) && count($extrafields->attribute_lab
     }
 }
 
-
 /*
  * ACTIONS
  *
@@ -216,13 +215,16 @@ $sql=preg_replace('/, $/','', $sql);
 $sql.= " FROM ".MAIN_DB_PREFIX."produit as t";
 
 $sql .= ' INNER JOIN '.MAIN_DB_PREFIX.'ludotheque as l ON t.fk_emplacement=l.rowid';
+$sql .= ' INNER JOIN '.MAIN_DB_PREFIX.'c_categorie_produit as cp ON t.fk_categorie=cp.rowid';
 
 if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label)) $sql.= " INNER JOIN ".MAIN_DB_PREFIX."ludotheque as l on (t.fk_emplacement = l.rowid)";
 $sql.= " WHERE 1 IN (".getEntity('myobject').")";
 foreach($search as $key => $val)
 {
-    if($key == 'fk_emplacement' && is_string($val))
+    if ($key == 'fk_emplacement' && is_string($val))
         $sql.=natural_search('l.libelle', $search[$key], 0);
+    else if ($key == 'fk_categorie' && is_string($val))
+        $sql.=natural_search('cp.libelle', $search[$key], 0);
     else 
         if ($search[$key] != '') $sql.=natural_search('t.'.$key, $search[$key], (($key == 'status')?2:($object->fields[$key]['type'] == 'integer'?1:0)));
 }
@@ -427,12 +429,16 @@ print '</tr>'."\n";
 // Fields title label
 // --------------------------------------------------------------------
 print '<tr class="liste_titre">';
+
+//var_dump($object->fields);
 foreach($object->fields as $key => $val)
 {
+    //var_dump($key);
     if (in_array($key, array('date_creation', 'tms', 'import_key', 'status'))) continue;
     $align='';
     if (in_array($val['type'], array('date','datetime','timestamp'))) $align='center';
     if (in_array($val['type'], array('timestamp'))) $align.='nowrap';
+    
     if (! empty($arrayfields['t.'.$key]['checked'])) print getTitleFieldOfList($arrayfields['t.'.$key]['label'], 0, $_SERVER['PHP_SELF'], 't.'.$key, '', $param, ($align?'class="'.$align.'"':''), $sortfield, $sortorder, $align.' ')."\n";
 }
 // Extra fields
@@ -512,8 +518,9 @@ while ($i < min($num, $limit))
                         $lien = true;
                     }
                     
-                    if ($val['label'] != 'Emplacement') print $obj->$key;
-                    else print $object->getOneEmplacementLibelle($obj->$key);
+                    if ($val['label'] == 'Emplacement') print $object->getOneEmplacementLibelle($obj->$key);
+                    else if ($val['label'] == 'Categorie') print $object->getOneCategorieLibelle($obj->$key);
+                    else print $obj->$key;
                         
                     if ($lien === true)
                         print '</a>';

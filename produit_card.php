@@ -202,7 +202,7 @@ if (empty($reshook))
 
 		if (! $error)
 		{
-			$result=$object->update($id, $object->categorie, $object->libelle, $object->description, $object->fk_emplacement);
+			$result=$object->update($id, $object->fk_categorie, $object->libelle, $object->description, $object->fk_emplacement);
 			if ($result > 0)
 			{
 				$action='info';
@@ -278,7 +278,8 @@ if ($action == 'info' && ! empty($id))
     //print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
     
     $object->fetch($id);
-    $lib = $object->getOneEmplacementLibelle($object->fk_emplacement);
+    $libEmpl = $object->getOneEmplacementLibelle($object->fk_emplacement);
+    $libCat = $object->getOneCategorieLibelle($object->fk_categorie);
     
     print '<input type="hidden" name="id" value="'.$object->rowid.'">';
     
@@ -297,8 +298,8 @@ if ($action == 'info' && ! empty($id))
         
         switch($key)
         {
-            case 'categorie':
-                print $object->categorie;
+            case 'fk_categorie':
+                print $libCat;
                 break;
             case 'libelle':
                 print $object->libelle;
@@ -311,7 +312,7 @@ if ($action == 'info' && ! empty($id))
                 print dol_print_date($db->jdate($object->date_achat), 'dayhour');
                 break;
             case 'fk_emplacement':
-                print $lib;
+                print $libEmpl;
                 break;
             default:
                 print '';
@@ -365,17 +366,15 @@ if ($action == 'create')
 	        
 	        print '</td></tr>';
 	    }
-	    // Sélection de la catgorie dans une liste déroulante
-	    // ----------------------------------- A CHANGER !! -----------------------------------
-	    else if (in_array($key, array('categorie')))
+	    // Sélection de la catégorie dans une liste déroulante
+	    else if (in_array($key, array('fk_categorie')))
 	    {
 	        print '<tr><td class="titlefieldcreate fieldrequired">'.$langs->trans($val['label']).'</td>';
 	        print '<td>';
 	        
 	        $tabCat = $object->getAllCategories();
 	        
-	        //$tabCat = array('Jeu' => 'Jeu', 'Film' => 'Film');
-	        print $form->selectarray('categorie', $tabCat, 'Jeu');
+	        print $form->selectarray('fk_categorie', $tabCat, 'Jeu');
 	        
 	        print '</td></tr>';
 	    }
@@ -446,14 +445,14 @@ if (($id || $ref) && $action == 'edit')
 	        print '</td></tr>';
 	    }
 	    // Sélection de la catgorie dans une liste déroulante
-	    else if (in_array($key, array('categorie')))
+	    else if (in_array($key, array('fk_categorie')))
 	    {
 	        print '<tr><td class="titlefieldcreate fieldrequired">'.$langs->trans($val['label']).'</td>';
 	        print '<td>';
 	        
 	        $tabCat = $object->getAllCategories();
 	        
-	        print $form->selectarray('categorie', $tabCat, $object->$key);
+	        print $form->selectarray('fk_categorie', $tabCat, $object->$key);
 	        
 	        print '</td></tr>';
 	    }
