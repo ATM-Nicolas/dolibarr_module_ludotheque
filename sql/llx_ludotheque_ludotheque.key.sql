@@ -17,8 +17,10 @@
 -- BEGIN MODULEBUILDER INDEXES
 ALTER TABLE llx_ludotheque_ludotheque ADD INDEX idx_produit_user_creat (fk_user_creat);
 ALTER TABLE llx_ludotheque_ludotheque ADD INDEX idx_produit_user_modif (fk_user_modif);
+ALTER TABLE llx_ludotheque_ludotheque ADD INDEX idx_produit_gerant (fk_gerant);
 -- END MODULEBUILDER INDEXES
 
 ALTER TABLE llx_ludotheque_ludotheque ADD CONSTRAINT fk_ludotheque_user_creat FOREIGN KEY (fk_user_creat) REFERENCES llx_user(rowid);
 ALTER TABLE llx_ludotheque_ludotheque ADD CONSTRAINT fk_ludotheque_user_modif FOREIGN KEY (fk_user_modif) REFERENCES llx_user(rowid);
+ALTER TABLE llx_ludotheque_ludotheque ADD CONSTRAINT fk_ludotheque_gerant FOREIGN KEY (fk_gerant) REFERENCES llx_societe(rowid);
 

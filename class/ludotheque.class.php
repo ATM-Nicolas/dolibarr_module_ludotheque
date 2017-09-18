@@ -76,6 +76,7 @@ class Ludotheque extends CommonObject
 	public $fields=array(
 	    'rowid'         =>array('type'=>'integer',      'label'=>'TechnicalID',      'enabled'=>1, 'visible'=>-1, 'notnull'=>true, 'index'=>true, 'position'=>1,  'comment'=>'Id'),
 	    'libelle'       =>array('type'=>'varchar(255)', 'label'=>'Libelle',          'enabled'=>1, 'visible'=>1,  'notnull'=>true),
+	    'fk_gerant'     =>array('type'=>'integer',      'label'=>'Gerant',           'enabled'=>1, 'visible'=>1,  'notnull'=>true),
 	    'fk_user_creat' =>array('type'=>'integer',      'label'=>'userCreat',        'enabled'=>1, 'visible'=>-1, 'notnull'=>false),
 /*		'ref'           =>array('type'=>'varchar(64)',  'label'=>'Ref',              'enabled'=>1, 'visible'=>1,  'notnull'=>true, 'index'=>true, 'position'=>10, 'searchall'=>1, 'comment'=>'Reference of object'),
 	    'entity'        =>array('type'=>'integer',      'label'=>'Entity',           'enabled'=>1, 'visible'=>0,  'notnull'=>true, 'index'=>true, 'position'=>20),
@@ -130,7 +131,7 @@ class Ludotheque extends CommonObject
 	function getAll()
 	{
 	    $limit = 26;
-	    $sql = 'SELECT l.rowid, l.libelle, l.fk_user_creat, l.date_creat, l.fk_user_modif, l.tms';
+	    $sql = 'SELECT l.rowid, l.libelle, l.fk_gerant, l.fk_user_creat, l.date_creat, l.fk_user_modif, l.tms';
 	    $sql .= ' FROM '.MAIN_DB_PREFIX.'ludotheque_ludotheque as l';
 	    $sql .= ' ORDER BY l.rowid ASC;';
 	        
@@ -167,7 +168,7 @@ class Ludotheque extends CommonObject
 	function fetch($id = 0, $ref = '', $ref_ext='', $ignore_expression = 0)
 	{
 	    $limit = 26;
-	    $sql = 'SELECT l.rowid, l.libelle, l.fk_user_creat, l.date_creat, l.fk_user_modif, l.tms';
+	    $sql = 'SELECT l.rowid, l.libelle, l.fk_gerant, l.fk_user_creat, l.date_creat, l.fk_user_modif, l.tms';
 	    $sql .= ' FROM '.MAIN_DB_PREFIX.'ludotheque_ludotheque as l';
 	    if ($id !== 0)
 	       $sql .= ' WHERE l.rowid='.$id;
@@ -194,6 +195,7 @@ class Ludotheque extends CommonObject
 	    {
 	        $this->rowid = $obj->rowid;
     	    $this->libelle = $obj->libelle;
+    	    $this->fk_gerant = $obj->fk_gerant;
     	    $this->fk_user_creat = $obj->fk_user_creat;
     	    $this->date_creat = $obj->date_creat;
     	    $this->fk_user_modif = $obj->fk_user_modif;
@@ -218,11 +220,14 @@ class Ludotheque extends CommonObject
 	    return true;
 	}
 	
-	function update($id, $libelle, $userId)
+	function update($id, $libelle, $userId, $fk_gerant)
 	{
 	    $sql = 'UPDATE '.MAIN_DB_PREFIX.'ludotheque_ludotheque as l';
-	    $sql .= ' SET l.libelle="'.$libelle.'", l.fk_user_modif="'.$userId.'", l.tms="'.$this->db->idate(dol_now());
-	    $sql .= '" WHERE l.rowid='.$id.';';
+	    $sql .= ' SET l.libelle="'.$libelle.'"';
+	    $sql .= ', l.fk_user_modif="'.$userId.'"';
+	    $sql .= ', l.tms="'.$this->db->idate(dol_now()).'"';
+	    $sql .= ', l.fk_gerant='.$fk_gerant;
+	    $sql .= ' WHERE l.rowid='.$id.';';
 	    
 	    $res = $this->db->query($sql);
 	    if (! $res)
@@ -231,6 +236,64 @@ class Ludotheque extends CommonObject
 	        exit;
 	    }
 	    return true;
+	}
+	
+	function getAllSociete()
+	{
+	    $limit = 26;
+	    $sql = 'SELECT rowid, nom';
+	    $sql .= ' FROM '.MAIN_DB_PREFIX.'societe';
+	    $sql .= ' ORDER BY rowid ASC LIMIT '.$limit.';';
+	    
+	    $res = $this->db->query($sql);
+	    if (! $res)
+	    {
+	        dol_print_error($this->db);
+	        exit;
+	    }
+	    
+	    $num = $this->db->num_rows($res);
+	    if ($num == 0)
+	    {
+	        dol_print_error($this->db);
+	        exit;
+	    }
+	    
+	    $i = 0;
+	    $table = array();
+	    while($i < min($num, $limit))
+	    {
+	        $obj = $this->db->fetch_object($res);
+	        if ($obj)
+	            $table[$obj->rowid] = $obj->nom;
+	            $i++;
+	    }
+	    
+	    return $table;
+	}
+	
+	function getSocieteLibelle($fk_gerant)
+	{
+	    $sql = 'SELECT s.nom';
+	    $sql .= ' FROM '.MAIN_DB_PREFIX.'societe as s';
+	    $sql .= ' WHERE s.rowid='.$fk_gerant.';';
+	    
+	    $res = $this->db->query($sql);
+	    if (! $res)
+	    {
+	        dol_print_error($this->db);
+	        exit;
+	    }
+	    
+	    $num = $this->db->num_rows($res);
+	    if ($num == 0)
+	    {
+	        dol_print_error($this->db);
+	        exit;
+	    }
+	    $obj = $this->db->fetch_object($res);
+	    
+	    return $obj->nom;
 	}
     
 	function getUserLibelle($fk_user)

@@ -216,7 +216,7 @@ if (empty($reshook))
 
 		if (! $error)
 		{
-			$result=$object->update($id, $object->libelle, $user->id);
+			$result=$object->update($id, $object->libelle, $user->id, $object->fk_gerant);
 			if ($result > 0)
 			{
 				//$action='info';
@@ -372,6 +372,9 @@ if ($action == 'info' && ! empty($id))
             case 'libelle':
                 print $object->libelle;
                 break;
+            case 'fk_gerant':
+                print $object->getSocieteLibelle($object->fk_gerant);
+                break;
             default:
                 print '';
         }
@@ -450,6 +453,7 @@ if ($action == 'create')
 if (($id || $ref) && $action == 'edit')
 {
     $object->fetch($id);
+    $tabSociete = $object->getAllSociete();
     
 	print load_fiche_titre($langs->trans("MyLudo"));
 
@@ -464,6 +468,13 @@ if (($id || $ref) && $action == 'edit')
 	print '<table class="border centpercent">'."\n";
 	print '<tr><td class="fieldrequired">'.$langs->trans("Label").'</td><td><input class="flat" type="text" size="36" name="libelle" value="'.$object->libelle.'"></td></tr>';
 	// LIST_OF_TD_LABEL_FIELDS_EDIT
+	
+	print '<tr><td class="fieldrequired">'.$langs->trans("Gerant").'</td>';
+	print '<td>';
+	
+	print $form->selectarray('fk_gerant', $tabSociete, $object->fk_gerant);
+	
+	print '</td>';
 	print '</table>';
 
 	dol_fiche_end();

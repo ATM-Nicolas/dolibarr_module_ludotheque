@@ -18,6 +18,7 @@ CREATE TABLE llx_ludotheque_ludotheque(
 	rowid INTEGER AUTO_INCREMENT PRIMARY KEY,
 	-- BEGIN MODULEBUILDER FIELDS
 	libelle VARCHAR(255),
+	fk_gerant INTEGER,
 	fk_user_creat INTEGER,
 	date_creat DATETIME,
 	fk_user_modif INTEGER,

@@ -32,6 +32,9 @@ ProduitsInLudo = Liste des produits de la ludothèque
 Categorie = Catégorie
 Libelle = Libellé
 DateAchat = Date d'achat
+userCreat = Créé par
+userModif = Modifié par
+Gerant = Gérant
 
 Buy = Acheter
 Create = Créer
@@ -41,8 +44,7 @@ DictionaryCategorie = Catégories des produits d'une ludothèque
 
 FieldRequired = Veuillez renseigner le champ '%s' !
 
-userCreat = Créé par
-userModif = Modifié par
+
 
 #
 # Page d'administration
