@@ -14,9 +14,13 @@
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
--- BEGIN MODULEBUILDER INDEXES
---ALTER TABLE llx_produit ADD INDEX idx_produit_emplacement (fk_emplacement);
--- END MODULEBUILDER INDEXES
-
-ALTER TABLE llx_c_categorie_produit ADD UNIQUE(libelle);
-
+CREATE TABLE llx_ludotheque_produit(
+	rowid INTEGER AUTO_INCREMENT PRIMARY KEY,
+	-- BEGIN MODULEBUILDER FIELDS
+	fk_categorie INTEGER,
+	libelle VARCHAR(255),
+	description TEXT,
+	date_achat DATETIME,
+	fk_emplacement INTEGER
+	-- END MODULEBUILDER FIELDS
+) ENGINE=innodb;

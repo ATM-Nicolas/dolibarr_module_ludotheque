@@ -54,6 +54,7 @@ if (! $res) die("Include of main fails");
 include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
 dol_include_once('/ludotheque/class/ludotheque.class.php');
 dol_include_once('/ludotheque/class/produit.class.php');
+dol_include_once('/ludotheque/class/actions_ludotheque.class.php');
 
 // Load traductions files requiredby by page
 $langs->loadLangs(array("mymodule","other"));
@@ -171,6 +172,29 @@ if (empty($reshook))
 		{
 			$action='create';
 		}
+	}
+	
+	
+	if ($action == 'addProduitInOneLudo' && ! empty($user->rights->ludotheque->create))
+	{
+	    $produit = new Produit($db);
+	    
+	    $result = $produit->create(GETPOST('libelle'), GETPOST('fk_categorie'), GETPOST('description'), GETPOST('fk_emplacement'));
+	    if ($result == true)
+	    {
+	        // Creation OK
+	        // TODO: Continuer à editer le lien !
+	        $urltogo=$backtopage?$backtopage:dol_buildpath('/ludotheque/ludotheque_card.php?action=info&',1);
+	        header("Location: ".$urltogo);
+	        exit;
+	    }
+	    else
+	    {
+	        // Creation KO
+	        if (! empty($object->errors)) setEventMessages(null, $object->errors, 'errors');
+	        else  setEventMessages($object->error, null, 'errors');
+	        $action='create';
+	    }
 	}
 	
 
@@ -308,17 +332,22 @@ if ($action == 'info' && ! empty($id))
 
 
 //  ---------------------------- Affichage la liste des produit de la ludothèque "$id" ----------------------------
-
+    
     print load_fiche_titre($langs->trans("ProduitsInLudo"));
+    $actionLudotheque = new ActionsLudotheque($db);
+    $produit = new Produit($db);
     
     // --------------------- Requête ---------------------
     $limit = 26;
     $sql = 'SELECT p.rowid, p.libelle as libelle, cp.libelle as fk_categorie, p.description, p.date_achat, l.libelle as fk_emplacement';
-    $sql .= ' FROM '.MAIN_DB_PREFIX.'produit as p INNER JOIN '.MAIN_DB_PREFIX.'ludotheque as l ON p.fk_emplacement=l.rowid';
+    $sql .= ' FROM '.MAIN_DB_PREFIX.'ludotheque_produit as p INNER JOIN '.MAIN_DB_PREFIX.'ludotheque_ludotheque as l ON p.fk_emplacement=l.rowid';
     $sql .= ' INNER JOIN '.MAIN_DB_PREFIX.'c_categorie_produit as cp ON p.fk_categorie=cp.rowid';
     $sql .= ' WHERE l.rowid='.$id.' ORDER BY p.rowid ASC LIMIT '.$limit.';';
     
-    $res = $db->query($sql);
+    $actionLudotheque->printList($sql, $produit);
+    //$actionLudotheque->test($produit, $extrafields);
+    
+    /*$res = $db->query($sql);
     if (! $res)
     {
         dol_print_error($db);
@@ -333,7 +362,6 @@ if ($action == 'info' && ! empty($id))
     }
     
     // --------------------- Affichage ---------------------
-    $produit = new Produit($db);
     
     $arrayfields=array();
     foreach($produit->fields as $key => $val)
@@ -397,7 +425,8 @@ if ($action == 'info' && ! empty($id))
     }
     
     print '</table>'."\n";
-    print '</div>'."\n";
+    print '</div>'."\n";*/
+    
 }
 
 // Part to create

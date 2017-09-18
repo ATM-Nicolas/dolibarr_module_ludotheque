@@ -138,11 +138,6 @@ if (empty($reshook))
 	    $action = 'info';
 	}
 	
-	if ($modifier)
-	{
-	    $action = 'edit';
-	}
-	
 	// Action to add record
 	if ($action == 'add' && ! empty($user->rights->ludotheque->create))
 	{
@@ -151,12 +146,13 @@ if (empty($reshook))
             if (in_array($key, array('rowid', 'date_achat'))) continue;	// Ignore special fields
 
             $object->$key=GETPOST($key,'alpha');
-            if ($key == 'description' && empty($object->$key)) $object->$key = '-';
+            //if ($key == 'description' && empty($object->$key)) $object->$key = '-';
             
             if ($val['notnull'] && $object->$key == '')
             {
                 $error++;
-                setEventMessages($langs->trans("ErrorFieldRequired",$langs->transnoentitiesnoconv($val['label'])), null, 'errors');
+                //setEventMessages($langs->trans("ErrorFieldRequired",$langs->transnoentitiesnoconv($val['label'])), null, 'errors');
+                setEventMessages($langs->trans("FieldRequired",$langs->transnoentitiesnoconv($val['label'])), null, 'errors');
             }
         }
 
@@ -190,13 +186,14 @@ if (empty($reshook))
 	    foreach ($object->fields as $key => $val)
         {
             $object->$key=GETPOST($key,'alpha');
-            if ($key == 'description' && empty($object->$key)) $object->$key = '-';
+            //if ($key == 'description' && empty($object->$key)) $object->$key = '-';
             
             if (in_array($key, array('rowid', 'date_achat'))) continue;
             if ($val['notnull'] && $object->$key == '')
             {
                 $error++;
-                setEventMessages($langs->trans("ErrorFieldRequired",$langs->transnoentitiesnoconv($val['label'])), null, 'errors');
+                //setEventMessages($langs->trans("ErrorFieldRequired",$langs->transnoentitiesnoconv($val['label'])), null, 'errors');
+                setEventMessages($langs->trans("FieldRequired",$langs->transnoentitiesnoconv($val['label'])), null, 'errors');
             }
         }
 
@@ -325,8 +322,8 @@ if ($action == 'info' && ! empty($id))
     dol_fiche_end();
     
     print '<div class="center">';
-    if(empty($object->date_achat))
-        print '<a class="button" href="produit_card.php?action=buy&id='.$id.'">Acheter</a> &nbsp; ';
+/*    if(empty($object->date_achat))
+        print '<a class="button" href="produit_card.php?action=buy&id='.$id.'">Acheter</a> &nbsp; ';*/
 //        print '<input type="submit" class="butAction" name="buy" value="'.dol_escape_htmltag($langs->trans("Buy")).'">';
 //    print '<input type="submit" class="button" name="modifier" value="'.dol_escape_htmltag($langs->trans("Edit")).'"> &nbsp; ';
     print '<a class="button" href="produit_card.php?action=edit&id='.$id.'">Modifier</a> &nbsp; ';

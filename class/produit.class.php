@@ -130,7 +130,7 @@ class Produit extends CommonObject
 	{
 	    $limit = 26;
 	    $sql = 'SELECT rowid, libelle';
-	    $sql .= ' FROM '.MAIN_DB_PREFIX.'c_categorie_produit';
+	    $sql .= ' FROM '.MAIN_DB_PREFIX.'ludotheque_c_categorie_produit';
 	    $sql .= ' WHERE 1 IN (1) ORDER BY rowid ASC LIMIT '.$limit.';';
 	    
 	    $res = $this->db->query($sql);
@@ -164,7 +164,7 @@ class Produit extends CommonObject
 	{
 	    $limit = 26;
 	    $sql = 'SELECT rowid, libelle';
-	    $sql .= ' FROM '.MAIN_DB_PREFIX.'c_categorie_produit';
+	    $sql .= ' FROM '.MAIN_DB_PREFIX.'ludotheque_c_categorie_produit';
 	    $sql .= ' WHERE rowid='.$id.' ORDER BY rowid ASC LIMIT '.$limit.';';
 	    
 	    $res = $this->db->query($sql);
@@ -196,7 +196,7 @@ class Produit extends CommonObject
 	    {
 	        $sql.='t.'.$key.', ';
 	    }*/
-	    $sql .= ' FROM '.MAIN_DB_PREFIX.'ludotheque as l';
+	    $sql .= ' FROM '.MAIN_DB_PREFIX.'ludotheque_ludotheque as l';
 	    $sql .= ' WHERE 1 IN (1) ORDER BY l.rowid ASC LIMIT '.$limit.';';
 	    
 	    $res = $db->query($sql);
@@ -234,7 +234,7 @@ class Produit extends CommonObject
 	     {
 	     $sql.='t.'.$key.', ';
 	     }*/
-	    $sql .= ' FROM '.MAIN_DB_PREFIX.'ludotheque as l';
+	    $sql .= ' FROM '.MAIN_DB_PREFIX.'ludotheque_ludotheque as l';
 	    $sql .= ' WHERE l.rowid='.$rowid.' ORDER BY l.rowid ASC LIMIT '.$limit.';';
 	    
 	    $res = $this->db->query($sql);
@@ -268,7 +268,7 @@ class Produit extends CommonObject
 	           $sql .= ', ';
 	            
 	    }
-	    $sql .= ' FROM '.MAIN_DB_PREFIX.'produit as p';
+	    $sql .= ' FROM '.MAIN_DB_PREFIX.'ludotheque_produit as p';
 	    $sql .= ' WHERE p.rowid='.$id.';';
 	    
 	    $res = $this->db->query($sql);
@@ -299,7 +299,7 @@ class Produit extends CommonObject
 	
 	function updateDate($id)
 	{
-	    $sql = 'UPDATE '.MAIN_DB_PREFIX.'produit as p';
+	    $sql = 'UPDATE '.MAIN_DB_PREFIX.'ludotheque_produit as p';
 	    $sql .= ' SET p.date_achat='.$this->db->idate(dol_now());
 	    $sql .= ' WHERE p.rowid='.$id.';';
 	    
@@ -314,13 +314,27 @@ class Produit extends CommonObject
 	
 	function update($id, $idCat, $lib, $desc, $fk_empl)
 	{
-	    $sql = 'UPDATE '.MAIN_DB_PREFIX.'produit as p';
+	    $sql = 'UPDATE '.MAIN_DB_PREFIX.'ludotheque_produit as p';
 	    $sql .= ' SET p.fk_categorie="'.$idCat;
 	    $sql .= '", p.libelle="'.$lib;
 	    $sql .= '", p.description="'.$desc;
 	    $sql .= '", p.fk_emplacement='.$fk_empl;
 	    
 	    $sql .= ' WHERE p.rowid='.$id.';';
+	    
+	    $res = $this->db->query($sql);
+	    if (! $res)
+	    {
+	        dol_print_error($this->db);
+	        exit;
+	    }
+	    return true;
+	}
+	
+	function create($lib, $fk_cat, $desc, $fk_empl)
+	{
+	    $sql = 'INSERT INTO '.MAIN_DB_PREFIX.'ludotheque_produit as p';
+	    $sql .= ' VALUES(null,'.$fk_cat.','.$lib.','.$desc.',null,'.$fk_empl.');';
 	    
 	    $res = $this->db->query($sql);
 	    if (! $res)

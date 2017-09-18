@@ -14,10 +14,9 @@
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-CREATE TABLE llx_c_categorie_produit(
+CREATE TABLE llx_ludotheque_ludotheque(
 	rowid INTEGER AUTO_INCREMENT PRIMARY KEY,
 	-- BEGIN MODULEBUILDER FIELDS
-	libelle VARCHAR(255),
-	active INTEGER
+	libelle VARCHAR(255)
 	-- END MODULEBUILDER FIELDS
 ) ENGINE=innodb;

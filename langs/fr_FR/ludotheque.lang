@@ -37,7 +37,9 @@ Buy = Acheter
 Create = Créer
 
 EnterAnyLib = Entrez un libellé
-DictionaryCategorie = Catégories
+DictionaryCategorie = Catégories des produits d'une ludothèque
+
+FieldRequired = Veuillez renseigner le champ '%s' !
 
 #
 # Page d'administration

@@ -129,7 +129,7 @@ class Ludotheque extends CommonObject
 	{
 	    $limit = 26;
 	    $sql = 'SELECT l.rowid, l.libelle';
-	    $sql .= ' FROM '.MAIN_DB_PREFIX.'ludotheque as l';
+	    $sql .= ' FROM '.MAIN_DB_PREFIX.'ludotheque_ludotheque as l';
 	    $sql .= ' WHERE l.rowid='.$id.';';
 	    
 	    $res = $this->db->query($sql);
@@ -156,7 +156,7 @@ class Ludotheque extends CommonObject
 	
 	function update($id, $libelle)
 	{
-	    $sql = 'UPDATE '.MAIN_DB_PREFIX.'ludotheque as l';
+	    $sql = 'UPDATE '.MAIN_DB_PREFIX.'ludotheque_ludotheque as l';
 	    $sql .= ' SET l.libelle="'.$libelle;
 	    $sql .= '" WHERE l.rowid='.$id.';';
 	    

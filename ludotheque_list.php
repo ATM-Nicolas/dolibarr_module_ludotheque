@@ -86,7 +86,7 @@ $pagenext = $page + 1;
 $object=new Ludotheque($db);
 $extrafields = new ExtraFields($db);
 $diroutputmassaction=$conf->ludotheque->dir_output . '/temp/massgeneration/'.$user->id;
-$hookmanager->initHooks(array('myobjectlist'));     // Note that conf->hooks_modules contains array
+//$hookmanager->initHooks(array('myobjectlist'));     // Note that conf->hooks_modules contains array
 // Fetch optionals attributes and labels
 $extralabels = $extrafields->fetch_name_optionals_label('myobject');
 $search_array_options=$extrafields->getOptionalsFromPost($extralabels,'','search_');
@@ -211,7 +211,7 @@ $parameters=array();
 $reshook=$hookmanager->executeHooks('printFieldListSelect',$parameters);    // Note that $action and $object may have been modified by hook
 $sql.=$hookmanager->resPrint;
 $sql=preg_replace('/, $/','', $sql);
-$sql.= " FROM ".MAIN_DB_PREFIX."ludotheque as t";
+$sql.= " FROM ".MAIN_DB_PREFIX."ludotheque_ludotheque as t";
 if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label)) $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."myobject_extrafields as ef on (t.rowid = ef.fk_object)";
 $sql.= " WHERE 1 IN (".getEntity('myobject').")";
 foreach($search as $key => $val)

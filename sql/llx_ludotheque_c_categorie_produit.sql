@@ -14,13 +14,10 @@
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-CREATE TABLE llx_produit(
+CREATE TABLE llx_ludotheque_c_categorie_produit(
 	rowid INTEGER AUTO_INCREMENT PRIMARY KEY,
 	-- BEGIN MODULEBUILDER FIELDS
-	fk_categorie INTEGER,
 	libelle VARCHAR(255),
-	description VARCHAR(255),
-	date_achat DATETIME,
-	fk_emplacement INTEGER
+	active INTEGER
 	-- END MODULEBUILDER FIELDS
 ) ENGINE=innodb;
