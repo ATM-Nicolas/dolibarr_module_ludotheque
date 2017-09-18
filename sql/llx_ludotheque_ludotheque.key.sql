@@ -14,17 +14,11 @@
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-CREATE TABLE llx_ludotheque_produit(
-	rowid INTEGER AUTO_INCREMENT PRIMARY KEY,
-	-- BEGIN MODULEBUILDER FIELDS
-	fk_categorie INTEGER,
-	libelle VARCHAR(255),
-	description TEXT,
-	date_achat DATETIME,
-	fk_emplacement INTEGER,
-	fk_user_creat INTEGER,
-	date_creat DATETIME,
-	fk_user_modif INTEGER,
-	tms TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-	-- END MODULEBUILDER FIELDS
-) ENGINE=innodb;
+-- BEGIN MODULEBUILDER INDEXES
+ALTER TABLE llx_ludotheque_ludotheque ADD INDEX idx_produit_user_creat (fk_user_creat);
+ALTER TABLE llx_ludotheque_ludotheque ADD INDEX idx_produit_user_modif (fk_user_modif);
+-- END MODULEBUILDER INDEXES
+
+ALTER TABLE llx_ludotheque_ludotheque ADD CONSTRAINT fk_ludotheque_user_creat FOREIGN KEY (fk_user_creat) REFERENCES llx_user(rowid);
+ALTER TABLE llx_ludotheque_ludotheque ADD CONSTRAINT fk_ludotheque_user_modif FOREIGN KEY (fk_user_modif) REFERENCES llx_user(rowid);
+
