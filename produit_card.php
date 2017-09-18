@@ -52,6 +52,8 @@ if (! $res && file_exists("../../../main.inc.php")) $res=@include("../../../main
 if (! $res) die("Include of main fails");
 
 include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
+dol_include_once('/ludotheque/lib/produit.lib.php');
+
 dol_include_once('/ludotheque/class/produit.class.php');
 
 // Load traductions files requiredby by page
@@ -202,7 +204,11 @@ if (empty($reshook))
 			$result=$object->update($id, $object->fk_categorie, $object->libelle, $object->description, $object->fk_emplacement);
 			if ($result > 0)
 			{
-				$action='info';
+			    //$action='info';
+			    // Creation OK
+			    $urltogo=$backtopage?$backtopage:dol_buildpath('/ludotheque/produit_card.php?action=info&id='.$id,1);
+			    header("Location: ".$urltogo);
+			    exit;
 			}
 			else
 			{
@@ -248,6 +254,8 @@ $form=new Form($db);
 
 llxHeader('','Produit','');
 
+$produitHead = produitAdminPrepareHead();
+
 // Example : Adding jquery code
 print '<script type="text/javascript" language="javascript">
 jQuery(document).ready(function() {
@@ -263,11 +271,62 @@ jQuery(document).ready(function() {
 });
 </script>';
 
+if ($action == 'moreInfo' && ! empty($id))
+{
+    $object->fetch($id);
+    
+    print load_fiche_titre($langs->trans("MyLudo"));
+    
+    dol_fiche_head($produitHead, 'events');
+    
+    $linkback = '<a href="'.DOL_URL_ROOT.'/custom/ludotheque/produit_list.php">'.$langs->trans("BackToList").'</a>';
+    
+    dol_banner_tab($object, 'action=moreInfo&id', $linkback, ($user->societe_id?0:1), 'rowid', 'libelle');
+    
+    print '<table class="border centpercent">'."\n";
+    foreach($object->fields as $key => $val)
+    {
+        if (! in_array($key, array('fk_user_creat', 'fk_user_modif', 'tms', 'date_creat'))) continue;
+        print '<tr><td';
+        print ' class="titlefieldcreate"';
+        
+        print '>'.$langs->trans($val['label']).'</td><td>';
+        
+        if ($key == 'date_creat' || $key == 'tms')
+            print dol_print_date($db->jdate($object->$key), 'dayhour');
+            if ($key == 'fk_user_creat')
+            {
+                print '<a href="../../user/card.php?id='.$object->fk_user_creat.'">';
+                print img_picto('', 'object_user.png').' ';
+                print $object->getUserLibelle($object->fk_user_creat);
+                print '</a>';
+            }
+            if ($key == 'fk_user_modif')
+            {
+                print '<a href="../../user/card.php?id='.$object->fk_user_modif.'">';
+                print img_picto('', 'object_user.png').' ';
+                print $object->getUserLibelle($object->fk_user_modif);
+                print '</a>';
+            }
+            
+            print '</td></tr>';
+    }
+    print '</table>'."\n";
+    
+    dol_fiche_end();
+}
 
 if ($action == 'info' && ! empty($id))
 {
+    $object->fetch($id);
+    
     print load_fiche_titre($langs->trans("MyProduct"));
     
+    dol_fiche_head($produitHead, 'card');
+    
+    $linkback = '<a href="'.DOL_URL_ROOT.'/custom/ludotheque/produit_list.php">'.$langs->trans("BackToList").'</a>';
+    
+    dol_banner_tab($object, 'action=info&id', $linkback, ($user->societe_id?0:1), 'rowid', 'libelle');
     /*print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
     print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
     print '<input type="hidden" name="action" value="info">';*/
@@ -285,7 +344,7 @@ if ($action == 'info' && ! empty($id))
     print '<table class="border centpercent">'."\n";
     foreach($object->fields as $key => $val)
     {
-        if (in_array($key, array('rowid'))) continue;
+        if (in_array($key, array('rowid', 'libelle', 'tms', 'date_creat', 'fk_user_creat', 'fk_user_modif'))) continue;
         if ($key == 'date_achat' && empty($object->$key)) continue;
         print '<tr><td';
         print ' class="titlefieldcreate';
@@ -429,7 +488,7 @@ if (($id || $ref) && $action == 'edit')
 	foreach($object->fields as $key => $val)
 	{
 	    
-	    if (in_array($key, array('rowid', 'date_achat'))) continue;
+	    if (in_array($key, array('rowid', 'date_achat', 'tms', 'date_creat', 'fk_user_creat', 'fk_user_modif'))) continue;
 	    
 	    // Sélection de l'emplacement dans une liste déroulante
 	    if (in_array($key, array('fk_emplacement')))

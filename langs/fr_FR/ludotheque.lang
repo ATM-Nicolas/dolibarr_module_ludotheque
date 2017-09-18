@@ -41,6 +41,9 @@ DictionaryCategorie = Catégories des produits d'une ludothèque
 
 FieldRequired = Veuillez renseigner le champ '%s' !
 
+userCreat = Créé par
+userModif = Modifié par
+
 #
 # Page d'administration
 #

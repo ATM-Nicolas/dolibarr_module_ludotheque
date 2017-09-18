@@ -38,7 +38,7 @@ class Ludotheque extends CommonObject
 	/**
 	 * @var string ID to identify managed object
 	 */
-	public $element = 'myobject';
+	public $element = 'ludotheque';
 	/**
 	 * @var string Name of table without prefix where object is stored
 	 */
@@ -76,14 +76,16 @@ class Ludotheque extends CommonObject
 	public $fields=array(
 	    'rowid'         =>array('type'=>'integer',      'label'=>'TechnicalID',      'enabled'=>1, 'visible'=>-1, 'notnull'=>true, 'index'=>true, 'position'=>1,  'comment'=>'Id'),
 	    'libelle'       =>array('type'=>'varchar(255)', 'label'=>'Libelle',          'enabled'=>1, 'visible'=>1,  'notnull'=>true),
-	    
+	    'fk_user_creat' =>array('type'=>'integer',      'label'=>'userCreat',        'enabled'=>1, 'visible'=>-1, 'notnull'=>false),
 /*		'ref'           =>array('type'=>'varchar(64)',  'label'=>'Ref',              'enabled'=>1, 'visible'=>1,  'notnull'=>true, 'index'=>true, 'position'=>10, 'searchall'=>1, 'comment'=>'Reference of object'),
 	    'entity'        =>array('type'=>'integer',      'label'=>'Entity',           'enabled'=>1, 'visible'=>0,  'notnull'=>true, 'index'=>true, 'position'=>20),
 	    'label'         =>array('type'=>'varchar(255)', 'label'=>'Label',            'enabled'=>1, 'visible'=>1,  'position'=>30,  'searchall'=>1),
 	    'qty'           =>array('type'=>'double(24,8)', 'label'=>'Qty',              'enabled'=>1, 'visible'=>1,  'position'=>40,  'searchall'=>0, 'isameasure'=>1),
 	    'status'        =>array('type'=>'integer',      'label'=>'Status',           'enabled'=>1, 'visible'=>1,  'index'=>true,   'position'=>1000),
-		'date_creation' =>array('type'=>'datetime',     'label'=>'DateCreation',     'enabled'=>1, 'visible'=>-1, 'notnull'=>true, 'position'=>500),
-	    'tms'           =>array('type'=>'timestamp',    'label'=>'DateModification', 'enabled'=>1, 'visible'=>-1, 'notnull'=>true, 'position'=>500),
+*/		'date_creat'    =>array('type'=>'datetime',     'label'=>'DateCreation',     'enabled'=>1, 'visible'=>-1, 'notnull'=>false, 'position'=>500),
+	    'fk_user_modif' =>array('type'=>'integer',      'label'=>'userModif',        'enabled'=>1, 'visible'=>-1, 'notnull'=>false),
+	    'tms'           =>array('type'=>'timestamp',    'label'=>'DateModification', 'enabled'=>1, 'visible'=>-1, 'notnull'=>false, 'position'=>500),
+/*
 		'import_key'    =>array('type'=>'varchar(14)',  'label'=>'ImportId',         'enabled'=>1, 'visible'=>-1,  'index'=>true,  'position'=>1000, 'nullifempty'=>1),*/
 	);
 	// END MODULEBUILDER PROPERTIES
@@ -125,12 +127,51 @@ class Ludotheque extends CommonObject
 		$this->db = $db;
 	}
 	
+	function getAll()
+	{
+	    $limit = 26;
+	    $sql = 'SELECT l.rowid, l.libelle, l.fk_user_creat, l.date_creat, l.fk_user_modif, l.tms';
+	    $sql .= ' FROM '.MAIN_DB_PREFIX.'ludotheque_ludotheque as l';
+	    $sql .= ' ORDER BY l.rowid ASC;';
+	        
+        $res = $this->db->query($sql);
+        if (! $res)
+        {
+            dol_print_error($this->db);
+            exit;
+        }
+        
+        $num = $this->db->num_rows($res);
+        if ($num == 0)
+        {
+            dol_print_error($this->db);
+            exit;
+        }
+        
+        $i = 0;
+        $tab = array();
+        while($i < $num)
+        {
+            $obj = $this->db->fetch_object($res);
+            
+            foreach($obj as $k => $v)
+            {
+                $ludo[$k] = $v; 
+            }
+            $tab[] = $ludo;
+            $i++;
+        }
+        return $tab;
+	}
+	
 	function fetch($id = 0, $ref = '', $ref_ext='', $ignore_expression = 0)
 	{
 	    $limit = 26;
-	    $sql = 'SELECT l.rowid, l.libelle';
+	    $sql = 'SELECT l.rowid, l.libelle, l.fk_user_creat, l.date_creat, l.fk_user_modif, l.tms';
 	    $sql .= ' FROM '.MAIN_DB_PREFIX.'ludotheque_ludotheque as l';
-	    $sql .= ' WHERE l.rowid='.$id.';';
+	    if ($id !== 0)
+	       $sql .= ' WHERE l.rowid='.$id;
+	    $sql .= ' ORDER BY l.rowid ASC;';
 	    
 	    $res = $this->db->query($sql);
 	    if (! $res)
@@ -148,16 +189,39 @@ class Ludotheque extends CommonObject
 	    
 	    $obj = $this->db->fetch_object($res);
 	    
-	    $this->rowid = $obj->rowid;
-	    $this->libelle = $obj->libelle;
+	    
+	    if ($obj->rowid === $id)
+	    {
+	        $this->rowid = $obj->rowid;
+    	    $this->libelle = $obj->libelle;
+    	    $this->fk_user_creat = $obj->fk_user_creat;
+    	    $this->date_creat = $obj->date_creat;
+    	    $this->fk_user_modif = $obj->fk_user_modif;
+    	    $this->tms = $obj->tms;
+	    }
+	    
+	    $allLudo = $this->getAll();
+	     
+	    $i = 0;
+	    while($i < count($allLudo))
+	    {
+	        if ($allLudo[$i]['rowid'] === $id)
+	        {
+	            if (($i+1) < count($allLudo))
+	                $this->ref_next = $allLudo[$i+1]['rowid'];
+	            if ($i > 0)
+	                $this->ref_previous = $allLudo[$i-1]['rowid'];
+	        }
+	        $i++;
+	    }
 	    
 	    return true;
 	}
 	
-	function update($id, $libelle)
+	function update($id, $libelle, $userId)
 	{
 	    $sql = 'UPDATE '.MAIN_DB_PREFIX.'ludotheque_ludotheque as l';
-	    $sql .= ' SET l.libelle="'.$libelle;
+	    $sql .= ' SET l.libelle="'.$libelle.'", l.fk_user_modif="'.$userId.'", l.tms="'.$this->db->idate(dol_now());
 	    $sql .= '" WHERE l.rowid='.$id.';';
 	    
 	    $res = $this->db->query($sql);
@@ -168,7 +232,31 @@ class Ludotheque extends CommonObject
 	    }
 	    return true;
 	}
-
+    
+	function getUserLibelle($fk_user)
+	{
+	    $sql = 'SELECT u.lastname';
+	    $sql .= ' FROM '.MAIN_DB_PREFIX.'user as u';
+	    $sql .= ' WHERE u.rowid='.$fk_user.';';
+	    
+	    $res = $this->db->query($sql);
+	    if (! $res)
+	    {
+	        dol_print_error($this->db);
+	        exit;
+	    }
+	    
+	    $num = $this->db->num_rows($res);
+	    if ($num == 0)
+	    {
+	        dol_print_error($this->db);
+	        exit;
+	    }
+	    $obj = $this->db->fetch_object($res);
+	    
+	    return $obj->lastname;
+	}
+	
 	/**
 	 *  Return a link to the object card (with optionaly the picto)
 	 *

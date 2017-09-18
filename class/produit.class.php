@@ -38,7 +38,7 @@ class Produit extends CommonObject
 	/**
 	 * @var string ID to identify managed object
 	 */
-	public $element = 'myobject';
+	public $element = 'produit';
 	/**
 	 * @var string Name of table without prefix where object is stored
 	 */
@@ -80,15 +80,17 @@ class Produit extends CommonObject
 	    'description'   =>array('type'=>'varchar(255)', 'label'=>'Description',      'enabled'=>1, 'visible'=>1,  'notnull'=>true),
 	    'date_achat'    =>array('type'=>'datetime',     'label'=>'DateAchat',        'enabled'=>1, 'visible'=>1,  'notnull'=>true),
 	    'fk_emplacement'=>array('type'=>'integer',      'label'=>'Emplacement',      'enabled'=>1, 'visible'=>1,  'notnull'=>true, 'index'=>true),
+	    'fk_user_creat' =>array('type'=>'integer',      'label'=>'userCreat',        'enabled'=>1, 'visible'=>-1, 'notnull'=>false),
 	    
 /*		'ref'           =>array('type'=>'varchar(64)',  'label'=>'Ref',              'enabled'=>1, 'visible'=>1,  'notnull'=>true, 'index'=>true, 'position'=>10, 'searchall'=>1, 'comment'=>'Reference of object'),
 	    'entity'        =>array('type'=>'integer',      'label'=>'Entity',           'enabled'=>1, 'visible'=>0,  'notnull'=>true, 'index'=>true, 'position'=>20),
 	    'label'         =>array('type'=>'varchar(255)', 'label'=>'Label',            'enabled'=>1, 'visible'=>1,  'position'=>30,  'searchall'=>1),
 	    'qty'           =>array('type'=>'double(24,8)', 'label'=>'Qty',              'enabled'=>1, 'visible'=>1,  'position'=>40,  'searchall'=>0, 'isameasure'=>1),
 	    'status'        =>array('type'=>'integer',      'label'=>'Status',           'enabled'=>1, 'visible'=>1,  'index'=>true,   'position'=>1000),
-		'date_creation' =>array('type'=>'datetime',     'label'=>'DateCreation',     'enabled'=>1, 'visible'=>-1, 'notnull'=>true, 'position'=>500),
-	    'tms'           =>array('type'=>'timestamp',    'label'=>'DateModification', 'enabled'=>1, 'visible'=>-1, 'notnull'=>true, 'position'=>500),
-		'import_key'    =>array('type'=>'varchar(14)',  'label'=>'ImportId',         'enabled'=>1, 'visible'=>-1,  'index'=>true,  'position'=>1000, 'nullifempty'=>1),
+*/		'date_creat'    =>array('type'=>'datetime',     'label'=>'DateCreation',     'enabled'=>1, 'visible'=>-1, 'notnull'=>false, 'position'=>500),
+	    'fk_user_modif' =>array('type'=>'integer',      'label'=>'userModif',        'enabled'=>1, 'visible'=>-1, 'notnull'=>false),
+	    'tms'           =>array('type'=>'timestamp',    'label'=>'DateModification', 'enabled'=>1, 'visible'=>-1, 'notnull'=>false, 'position'=>500),
+/*		'import_key'    =>array('type'=>'varchar(14)',  'label'=>'ImportId',         'enabled'=>1, 'visible'=>-1,  'index'=>true,  'position'=>1000, 'nullifempty'=>1),
 */
 	);
 	// END MODULEBUILDER PROPERTIES
@@ -124,6 +126,30 @@ class Produit extends CommonObject
 	public function __construct(DoliDB $db)
 	{
 		$this->db = $db;
+	}
+	
+	function getUserLibelle($fk_user)
+	{
+	    $sql = 'SELECT u.lastname';
+	    $sql .= ' FROM '.MAIN_DB_PREFIX.'user as u';
+	    $sql .= ' WHERE u.rowid='.$fk_user.';';
+	    
+	    $res = $this->db->query($sql);
+	    if (! $res)
+	    {
+	        dol_print_error($this->db);
+	        exit;
+	    }
+	    
+	    $num = $this->db->num_rows($res);
+	    if ($num == 0)
+	    {
+	        dol_print_error($this->db);
+	        exit;
+	    }
+	    $obj = $this->db->fetch_object($res);
+	    
+	    return $obj->lastname;
 	}
 	
 	function getAllCategories()
@@ -257,6 +283,43 @@ class Produit extends CommonObject
 	    return false;
 	}
 	
+	function getAll()
+	{
+	    $limit = 26;
+	    $sql = 'SELECT l.rowid, l.libelle, l.fk_user_creat, l.date_creat, l.fk_user_modif, l.tms';
+	    $sql .= ' FROM '.MAIN_DB_PREFIX.'ludotheque_produit as l';
+	    $sql .= ' ORDER BY l.rowid ASC;';
+	    
+	    $res = $this->db->query($sql);
+	    if (! $res)
+	    {
+	        dol_print_error($this->db);
+	        exit;
+	    }
+	    
+	    $num = $this->db->num_rows($res);
+	    if ($num == 0)
+	    {
+	        dol_print_error($this->db);
+	        exit;
+	    }
+	    
+	    $i = 0;
+	    $tab = array();
+	    while($i < $num)
+	    {
+	        $obj = $this->db->fetch_object($res);
+	        
+	        foreach($obj as $k => $v)
+	        {
+	            $ludo[$k] = $v;
+	        }
+	        $tab[] = $ludo;
+	        $i++;
+	    }
+	    return $tab;
+	}
+	
 	function fetch($id = 0, $ref = '', $ref_ext='', $ignore_expression = 0)
 	{
 	    $limit = 26;
@@ -264,7 +327,7 @@ class Produit extends CommonObject
 	    foreach($this->fields as $key => $val)
 	    {
 	        $sql .= 'p.'.$key;
-	        if($key !== 'fk_emplacement')
+	        if($key !== 'tms')
 	           $sql .= ', ';
 	            
 	    }
@@ -293,6 +356,25 @@ class Produit extends CommonObject
 	    $this->description = $obj->description;
 	    $this->date_achat = $obj->date_achat;
 	    $this->fk_emplacement = $obj->fk_emplacement;
+	    $this->fk_user_creat = $obj->fk_user_creat;
+	    $this->date_creat = $obj->date_creat;
+	    $this->fk_user_modif = $obj->fk_user_modif;
+	    $this->tms = $obj->tms;
+	    
+	    $allProduit = $this->getAll();
+	    
+	    $i = 0;
+	    while($i < count($allProduit))
+	    {
+	        if ($allProduit[$i]['rowid'] === $id)
+	        {
+	            if (($i+1) < count($allProduit))
+	                $this->ref_next = $allProduit[$i+1]['rowid'];
+	                if ($i > 0)
+	                    $this->ref_previous = $allProduit[$i-1]['rowid'];
+	        }
+	        $i++;
+	    }
 	    
 	    return true;
 	}
@@ -319,6 +401,8 @@ class Produit extends CommonObject
 	    $sql .= '", p.libelle="'.$lib;
 	    $sql .= '", p.description="'.$desc;
 	    $sql .= '", p.fk_emplacement='.$fk_empl;
+	    $sql .= ', p.tms="'.$this->db->idate(dol_now()).'"';
+	    
 	    
 	    $sql .= ' WHERE p.rowid='.$id.';';
 	    

@@ -40,7 +40,7 @@ global $langs, $user;
 
 // Libraries
 require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
-require_once '../lib/mymodule.lib.php';
+require_once '../lib/ludotheque.lib.php';
 //require_once "../class/myclass.class.php";
 // Translations
 $langs->load("ludotheque@ludotheque");
@@ -72,7 +72,7 @@ $linkback = '<a href="' . DOL_URL_ROOT . '/admin/modules.php">' . $langs->trans(
 print load_fiche_titre($langs->trans($page_name), $linkback);
 
 // Configuration header
-$head = mymoduleAdminPrepareHead();
+$head = ludothequeAdminPrepareHead();
 dol_fiche_head(
 	$head,
 	'settings',

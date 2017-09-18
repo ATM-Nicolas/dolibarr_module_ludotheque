@@ -22,7 +22,11 @@
  *
  * Put detailed description here.
  */
-
+require_once DOL_DOCUMENT_ROOT.'/main.inc.php';
+require_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
+require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
+require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
+dol_include_once('/ludotheque/class/ludotheque.class.php');
 /**
  * Class ActionsMyModule
  */
@@ -509,6 +513,8 @@ class ActionsLudotheque
 	// Affiche une liste d'objet du type de $object
 	public function printList($sql, &$object)
 	{
+	    //$langs->loadLangs(array("ludotheque","other"));
+	    
 	    $arrayfields=array();
 	    $objClass = get_class($object);
 	    
@@ -531,19 +537,19 @@ class ActionsLudotheque
 	        
 	        foreach($produit->fields as $key => $val)
 	        {
-	            if (in_array($key, array('rowid'))) continue;
-	            print '<th>';
+	            if (in_array($key, array('rowid', 'tms', 'date_creat', 'fk_user_creat', 'fk_user_modif'))) continue;
 	            
 	            if (in_array($key, array('date_achat'))) print '<input type="hidden" name="'.$key.'" value="null">';
 	            else 
 	            {
-	                print '<input type="text" name="'.$key.'"';
+	                print '<th>';
 	                if ($key == 'fk_emplacement')
-	                   print ' value="'.$produit->getOneEmplacementLibelle(GETPOST('id')).'" disabled';
-	                print '>';
+	                    print '<input type="hidden" name="'.$key.'" value="'.$produit->getOneEmplacementLibelle(GETPOST('id')).'">';
+	                else 
+	                    print '<input type="text" name="'.$key.'"';
+	                
+	                print '</th>';
 	            }
-	            
-	            print '</th>';
 	        }
 	        
 	        print '<th>';
@@ -647,7 +653,8 @@ class ActionsLudotheque
 	    {
 	        $colspan=1;
 	        foreach($arrayfields as $key => $val) { if (! empty($val['checked'])) $colspan++; }
-	        print '<tr><td colspan="'.$colspan.'" class="opacitymedium">'.$langs->trans("NoRecordFound").'</td></tr>';
+	        // TODO: Régler le problème avec la variable $langs
+	        print '<tr><td colspan="'.$colspan.'" class="opacitymedium">'./*$langs->trans("*/NoRecordFound/*")*/.'</td></tr>';
 	    }
 	    
 	    print '</table>'."\n";

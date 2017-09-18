@@ -28,7 +28,7 @@
  *
  * @return array
  */
-function mymoduleAdminPrepareHead()
+function produitAdminPrepareHead()
 {
 	global $langs, $conf;
 
@@ -37,13 +37,13 @@ function mymoduleAdminPrepareHead()
 	$h = 0;
 	$head = array();
 
-	$head[$h][0] = dol_buildpath("/ludotheque/admin/setup.php", 1);
-	$head[$h][1] = $langs->trans("Settings");
-	$head[$h][2] = 'settings';
+	$head[$h][0] = dol_buildpath("/ludotheque/produit_card.php?action=info&id=".GETPOST('id'), 1);
+	$head[$h][1] = $langs->trans("Card");
+	$head[$h][2] = 'card';
 	$h++;
-	$head[$h][0] = dol_buildpath("/ludotheque/admin/about.php", 1);
-	$head[$h][1] = $langs->trans("About");
-	$head[$h][2] = 'about';
+	$head[$h][0] = dol_buildpath("/ludotheque/produit_card.php?action=moreInfo&id=".GETPOST('id'), 1);
+	$head[$h][1] = $langs->trans("Events");
+	$head[$h][2] = 'events';
 	$h++;
 
 	// Show more tabs from modules

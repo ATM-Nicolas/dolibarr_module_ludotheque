@@ -39,7 +39,7 @@ if (! $res) die("Include of main fails");
 // Libraries
 require_once DOL_DOCUMENT_ROOT.'/core/lib/admin.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
-require_once '../lib/mymodule.lib.php';
+require_once '../lib/ludotheque.lib.php';
 
 // Translations
 $langs->load("errors");
@@ -77,7 +77,7 @@ $linkback = '<a href="' . DOL_URL_ROOT . '/admin/modules.php">'
 print load_fiche_titre($langs->trans($page_name), $linkback);
 
 // Configuration header
-$head = mymoduleAdminPrepareHead();
+$head = ludothequeAdminPrepareHead();
 dol_fiche_head(
 	$head,
 	'about',
