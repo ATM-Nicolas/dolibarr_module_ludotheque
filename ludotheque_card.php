@@ -418,6 +418,8 @@ if ($action == 'info' && ! empty($id))
 // Part to create
 if ($action == 'create')
 {
+    $tabSociete = $object->getAllSociete();
+    
 	print load_fiche_titre($langs->trans($langs->transnoentitiesnoconv("NewLudo")));
 
 	print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
@@ -430,12 +432,20 @@ if ($action == 'create')
 	print '<table class="border centpercent">'."\n";
 	foreach($object->fields as $key => $val)
 	{
-	    if (in_array($key, array('rowid', 'date_achat'))) continue;
+	    if (in_array($key, array('rowid', 'date_achat', 'fk_user_creat', 'date_creat', 'fk_user_modif', 'tms'))) continue;
     	print '<tr><td';
     	print ' class="titlefieldcreate';
     	if ($val['notnull']) print ' fieldrequired';
     	print '"';
-    	print '>'.$langs->trans($val['label']).'</td><td><input class="flat" type="text" name="'.$key.'" value="'.(GETPOST($key,'alpha')?GETPOST($key,'alpha'):'').'"></td></tr>';
+    	print '>'.$langs->trans($val['label']).'</td>';
+    	print '<td>';
+    	
+    	if ($key == 'fk_gerant')
+    	    print $form->selectarray('fk_emplacement', $tabSociete);
+    	else 
+    	    print '<input class="flat" type="text" name="'.$key.'" value="'.(GETPOST($key,'alpha')?GETPOST($key,'alpha'):'').'">';
+    	
+    	print '</td></tr>';
 	}
 	print '</table>'."\n";
 

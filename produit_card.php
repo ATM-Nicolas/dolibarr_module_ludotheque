@@ -410,7 +410,7 @@ if ($action == 'create')
 	print '<table class="border centpercent">'."\n";
 	foreach($object->fields as $key => $val)
 	{
-	    if (in_array($key, array('rowid', 'date_achat'))) continue;
+	    if (in_array($key, array('rowid', 'date_achat', 'fk_user_creat', 'date_creat', 'fk_user_modif', 'tms'))) continue;
 
 	    // Sélection de l'emplacement dans une liste déroulante
 	    if (in_array($key, array('fk_emplacement')))
