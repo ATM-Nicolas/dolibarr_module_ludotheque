@@ -511,18 +511,30 @@ class ActionsLudotheque
 	}
 	
 	// Affiche une liste d'objet du type de $object
-	public function printList($sql, &$object)
+	public function printList($sql, &$object, $langs)
 	{
-	    //$langs->loadLangs(array("ludotheque","other"));
-	    
 	    $arrayfields=array();
 	    $objClass = get_class($object);
+	    $form = new Form($this->db);
+	    $produit = new Produit($this->db);
+	    //$tab = $produit->getAllNullEmplacement();
 	    
+	    /*
 	    print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
 	    print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 	    print '<input type="hidden" name="action" value="addProduitInOneLudo">';
+	    */
 	    
-	    print '<div class="div-table-responsive">';
+	    /*print '<div>';
+	    
+	    print $langs->trans('AddProduit');
+	    print $form->selectarray('idProduit', $tab);
+	    print ' &nbsp; <a class="button" href="ludotheque_card.php?action=addProduitInOneLudo">Ajouter</a>';
+	    
+	    print '</div><br>';*/
+	    
+	    //print '</form>';
+	    
 	    print '<table class="tagtable liste'.($moreforfilter?" listwithfilterbefore":"").'">'."\n";
 	    
 	    // ----------------------------------- Affichage des entêtes -----------------------------------
@@ -531,32 +543,33 @@ class ActionsLudotheque
 	    
 	    if ($objClass == 'Produit');
 	    {
-	        $produit = new Produit($this->db);
 	        
-	        print '<tr class="liste_titre">';
-	        
-	        foreach($produit->fields as $key => $val)
+	        if (GETPOST('id'))
 	        {
-	            if (in_array($key, array('rowid', 'tms', 'date_creat', 'fk_user_creat', 'fk_user_modif'))) continue;
-	            
-	            if (in_array($key, array('date_achat'))) print '<input type="hidden" name="'.$key.'" value="null">';
-	            else 
-	            {
-	                print '<th>';
-	                if ($key == 'fk_emplacement')
-	                    print '<input type="hidden" name="'.$key.'" value="'.$produit->getOneEmplacementLibelle(GETPOST('id')).'">';
-	                else 
-	                    print '<input type="text" name="'.$key.'"';
-	                
-	                print '</th>';
-	            }
+	            /*print '<tr class="liste_titre">';
+    	        
+    	        // TODO: Afficher un select avec tous les produits déjà crées et qui ne sont pas 
+    	        
+    	        foreach($produit->fields as $key => $val)
+    	        {
+    	            if (in_array($key, array('rowid', 'tms', 'date_creat', 'fk_user_creat', 'fk_user_modif'))) continue;
+    	            
+    	            if (in_array($key, array('date_achat'))) print '<input type="hidden" name="'.$key.'" value="null">';
+    	            else 
+    	            {
+    	                print '<th>';
+    	                if ($key == 'fk_emplacement')
+    	                    print '<input type="hidden" name="'.$key.'" value="'.$produit->getOneEmplacementLibelle(GETPOST('id')).'">';
+    	                else 
+    	                    print '<input type="text" name="'.$key.'"';
+    	                
+    	                print '</th>';
+    	            }
+    	        }
+    	        
+    	        print '</tr>';
+    	        */
 	        }
-	        
-	        print '<th>';
-	        print '<input class="button" type="submit" name="add" value="Ajouter">';
-	        print '</th>';
-	        
-	        print '</tr>';
 	        
 	        foreach($produit->fields as $key => $val)
 	        {
@@ -654,11 +667,15 @@ class ActionsLudotheque
 	        $colspan=1;
 	        foreach($arrayfields as $key => $val) { if (! empty($val['checked'])) $colspan++; }
 	        // TODO: Régler le problème avec la variable $langs
-	        print '<tr><td colspan="'.$colspan.'" class="opacitymedium">'./*$langs->trans("*/NoRecordFound/*")*/.'</td></tr>';
+	        print '<tr><td colspan="'.$colspan.'" class="opacitymedium">'.$langs->trans("NoRecordFound").'</td></tr>';
 	    }
 	    
+	    
 	    print '</table>'."\n";
+	    /*
 	    print '</div>'."\n";
+	    */
+	    return $num;
 	}
 
 	/**

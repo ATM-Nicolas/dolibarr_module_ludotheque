@@ -148,7 +148,6 @@ if (empty($reshook))
             if (in_array($key, array('rowid', 'date_achat'))) continue;	// Ignore special fields
 
             $object->$key=GETPOST($key,'alpha');
-            //if ($key == 'description' && empty($object->$key)) $object->$key = '-';
             
             if ($val['notnull'] && $object->$key == '')
             {
@@ -160,7 +159,7 @@ if (empty($reshook))
 
 		if (! $error)
 		{
-			$result=$object->createCommon($user);
+			$result=$object->create($user, GETPOST('libelle'), GETPOST('fk_categorie'), GETPOST('description'), GETPOST('fk_emplacement'));
 			if ($result > 0)
 			{
 				// Creation OK
@@ -415,10 +414,10 @@ if ($action == 'create')
 	    // Sélection de l'emplacement dans une liste déroulante
 	    if (in_array($key, array('fk_emplacement')))
 	    {	        
-	        print '<tr><td class="titlefieldcreate fieldrequired">'.$langs->trans($val['label']).'</td>';
+	        print '<tr><td class="titlefieldcreate">'.$langs->trans($val['label']).'</td>';
 	        print '<td>';
 	        
-	        print $form->selectarray('fk_emplacement', $tab, '1');
+	        print $form->selectarray('fk_emplacement', $tab);
 	        
 	        print '</td></tr>';
 	    }

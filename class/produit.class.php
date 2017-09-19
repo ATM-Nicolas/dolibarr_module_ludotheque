@@ -42,7 +42,7 @@ class Produit extends CommonObject
 	/**
 	 * @var string Name of table without prefix where object is stored
 	 */
-	public $table_element = 'produit';
+	public $table_element = 'ludotheque_produit';
 
 	/**
 	 * @var array  Does this field is linked to a thirdparty ?
@@ -79,7 +79,7 @@ class Produit extends CommonObject
 	    'fk_categorie'  =>array('type'=>'integer',      'label'=>'Categorie',        'enabled'=>1, 'visible'=>1,  'notnull'=>true),
 	    'description'   =>array('type'=>'varchar(255)', 'label'=>'Description',      'enabled'=>1, 'visible'=>1,  'notnull'=>true),
 	    'date_achat'    =>array('type'=>'datetime',     'label'=>'DateAchat',        'enabled'=>1, 'visible'=>1,  'notnull'=>true),
-	    'fk_emplacement'=>array('type'=>'integer',      'label'=>'Emplacement',      'enabled'=>1, 'visible'=>1,  'notnull'=>true, 'index'=>true),
+	    'fk_emplacement'=>array('type'=>'integer',      'label'=>'Emplacement',      'enabled'=>1, 'visible'=>1,  'notnull'=>false, 'index'=>true),
 	    'fk_user_creat' =>array('type'=>'integer',      'label'=>'userCreat',        'enabled'=>1, 'visible'=>-1, 'notnull'=>false),
 	    
 /*		'ref'           =>array('type'=>'varchar(64)',  'label'=>'Ref',              'enabled'=>1, 'visible'=>1,  'notnull'=>true, 'index'=>true, 'position'=>10, 'searchall'=>1, 'comment'=>'Reference of object'),
@@ -241,6 +241,7 @@ class Produit extends CommonObject
 	    
 	    $i = 0;
 	    $table = array();
+	    $table[0] = '';
 	    while($i < min($num, $limit))
 	    {
 	        $obj = $db->fetch_object($res);
@@ -320,6 +321,38 @@ class Produit extends CommonObject
 	    return $tab;
 	}
 	
+	function getAllNullEmplacement()
+	{
+	    $limit = 26;
+	    $sql = 'SELECT l.rowid, l.libelle, l.fk_user_creat, l.date_creat, l.fk_user_modif, l.tms';
+	    $sql .= ' FROM '.MAIN_DB_PREFIX.'ludotheque_produit as l';
+	    $sql .= ' WHERE l.fk_emplacement is NULL';
+	    $sql .= ' ORDER BY l.rowid ASC;';
+	    
+	    $res = $this->db->query($sql);
+	    if (! $res)
+	    {
+	        dol_print_error($this->db);
+	        exit;
+	    }
+	    
+	    $num = $this->db->num_rows($res);
+	    if ($num == 0)
+	        return -1;
+	    
+	    $i = 0;
+	    $table = array();
+	    $table[0] = '';
+	    while($i < min($num, $limit))
+	    {
+	        $obj = $this->db->fetch_object($res);
+	        if ($obj)
+	            $table[$obj->rowid] = $obj->libelle;
+	            $i++;
+	    }
+	    return $table;
+	}
+	
 	function fetch($id = 0, $ref = '', $ref_ext='', $ignore_expression = 0)
 	{
 	    $limit = 26;
@@ -394,15 +427,17 @@ class Produit extends CommonObject
 	    return true;
 	}
 	
-	function update($id, $idCat, $lib, $desc, $fk_empl)
+	function update($user, $id, $idCat, $lib, $desc, $fk_empl)
 	{
+	    if (! $fk_empl)
+	        $fk_empl = 'null';
 	    $sql = 'UPDATE '.MAIN_DB_PREFIX.'ludotheque_produit as p';
 	    $sql .= ' SET p.fk_categorie="'.$idCat;
 	    $sql .= '", p.libelle="'.$lib;
 	    $sql .= '", p.description="'.$desc;
 	    $sql .= '", p.fk_emplacement='.$fk_empl;
+	    $sql .= ', p.fk_user_modif='.$user->id;
 	    $sql .= ', p.tms="'.$this->db->idate(dol_now()).'"';
-	    
 	    
 	    $sql .= ' WHERE p.rowid='.$id.';';
 	    
@@ -415,10 +450,12 @@ class Produit extends CommonObject
 	    return true;
 	}
 	
-	function create($lib, $fk_cat, $desc, $fk_empl)
+	function create($user, $lib, $fk_cat, $desc, $fk_empl)
 	{
-	    $sql = 'INSERT INTO '.MAIN_DB_PREFIX.'ludotheque_produit as p';
-	    $sql .= ' VALUES(null,'.$fk_cat.','.$lib.','.$desc.',null,'.$fk_empl.');';
+	    if ($fk_empl == 0)
+	        $fk_empl = 'null';
+	    $sql = 'INSERT INTO '.MAIN_DB_PREFIX.'ludotheque_produit';
+	    $sql .= ' VALUES(null,'.$fk_cat.',"'.$lib.'","'.$desc.'",null,'.$fk_empl.', '.$user->id.', '.$this->db->idate(dol_now()).', null, null);';
 	    
 	    $res = $this->db->query($sql);
 	    if (! $res)

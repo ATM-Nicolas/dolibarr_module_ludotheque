@@ -42,7 +42,7 @@ class Ludotheque extends CommonObject
 	/**
 	 * @var string Name of table without prefix where object is stored
 	 */
-	public $table_element = 'ludotheque';
+	public $table_element = 'ludotheque_ludotheque';
 
 	/**
 	 * @var array  Does this field is linked to a thirdparty ?
@@ -126,6 +126,45 @@ class Ludotheque extends CommonObject
 	public function __construct(DoliDB $db)
 	{
 		$this->db = $db;
+	}
+	
+	function getAllProduitInOneLudo($fk_empl)
+	{
+	    $limit = 26;
+	    $sql = 'SELECT p.rowid, p.fk_categorie, p.libelle';
+	    $sql .= ' FROM '.MAIN_DB_PREFIX.'ludotheque_ludotheque as l';
+	    $sql .= ' INNER JOIN '.MAIN_DB_PREFIX.'ludotheque_produit as p ON p.fk_emplacement=l.rowid';
+	    $sql .= ' WHERE p.fk_emplacement='.$fk_empl;
+	    $sql .= ' ORDER BY l.rowid ASC;';
+	    
+	    $res = $this->db->query($sql);
+	    if (! $res)
+	    {
+	        dol_print_error($this->db);
+	        exit;
+	    }
+	    
+	    $num = $this->db->num_rows($res);
+	    if ($num == 0)
+	    {
+	        dol_print_error($this->db);
+	        exit;
+	    }
+	    
+	    $i = 0;
+	    $tab = array();
+	    while($i < $num)
+	    {
+	        $obj = $this->db->fetch_object($res);
+	        
+	        foreach($obj as $k => $v)
+	        {
+	            $ludo[$k] = $v;
+	        }
+	        $tab[] = $ludo;
+	        $i++;
+	    }
+	    return $tab;
 	}
 	
 	function getAll()

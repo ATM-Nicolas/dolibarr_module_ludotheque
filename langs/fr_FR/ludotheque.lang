@@ -38,12 +38,14 @@ Gerant = Gérant
 
 Buy = Acheter
 Create = Créer
+Command = Commander
+AddProduit = Ajouter le produit 
 
 EnterAnyLib = Entrez un libellé
 DictionaryCategorie = Catégories des produits d'une ludothèque
 
 FieldRequired = Veuillez renseigner le champ '%s' !
-
+ProduitsCommandDone = La commande auprès de '%s' a été passée !
 
 
 #

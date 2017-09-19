@@ -58,6 +58,9 @@ dol_include_once('/ludotheque/class/ludotheque.class.php');
 dol_include_once('/ludotheque/class/produit.class.php');
 dol_include_once('/ludotheque/class/actions_ludotheque.class.php');
 
+// Pour passer les commandes
+include_once(DOL_DOCUMENT_ROOT.'/commande/class/commande.class.php');
+
 // Load traductions files requiredby by page
 $langs->loadLangs(array("mymodule","other"));
 
@@ -132,9 +135,41 @@ if (empty($reshook))
 		$action='';
 	}
 	
-	if ($modifier)
+	if ($action == 'command')
 	{
-	    $action = 'edit';
+	    $object->fetch($id);
+
+	    // Variables prédéfinies
+	    $pu_ht = 10;
+	    $qty = 1;
+	    $txtva = 20;
+	    
+	    // Creation d'une nouvelle commande avec pour client, le tiers lié à la Ludothèque => function create(...)
+	    $command = new Commande($db);
+	    
+	    $command->idLudo = $id;
+	    $command->socid = $object->fk_gerant;
+	    $command->date_commande = $db->idate(dol_now());
+	    
+	    $idCommande = $command->create($user);
+	    
+	    // Ajout d'autant de ligne sur la commande qu'il y a de produit dans la Ludothèque => function addline(...)
+	    $tabLudoProduits = $object->getAllProduitInOneLudo($id);
+	    
+	    $i = 0;
+	    while($i < count($tabLudoProduits))
+	    {
+	        $command->addline($tabLudoProduits[$i]['libelle'], $pu_ht, $qty, $txtva);
+	        $i++;
+	    }
+	    
+	    
+	    
+	    setEventMessages($langs->trans('ProduitsCommandDone', $object->getSocieteLibelle($object->fk_gerant)), array());
+	    
+	    $urltogo=$backtopage?$backtopage:dol_buildpath('/../commande/card.php?id='.$idCommande,1);
+	    header("Location: ".$urltogo);
+	    exit;
 	}
 
 	// Action to add record
@@ -176,17 +211,18 @@ if (empty($reshook))
 		}
 	}
 	
-	
+	// TODO: Compléter
 	if ($action == 'addProduitInOneLudo' && ! empty($user->rights->ludotheque->create))
 	{
 	    $produit = new Produit($db);
+	    $produit->fetch(GETPOST('idProduit'));
 	    
-	    $result = $produit->create(GETPOST('libelle'), GETPOST('fk_categorie'), GETPOST('description'), GETPOST('fk_emplacement'));
+	    $object->fetch($id);
+	    $result = $produit->update($user, $produit->rowid, $produit->fk_categorie, $produit->libelle, $produit->description, $object->rowid);
 	    if ($result == true)
 	    {
 	        // Creation OK
-	        // TODO: Continuer à editer le lien !
-	        $urltogo=$backtopage?$backtopage:dol_buildpath('/ludotheque/ludotheque_card.php?action=info&',1);
+	        $urltogo=$backtopage?$backtopage:dol_buildpath('/ludotheque/ludotheque_card.php?action=info&id='.$id,1);
 	        header("Location: ".$urltogo);
 	        exit;
 	    }
@@ -269,7 +305,7 @@ if (empty($reshook))
 
 $form=new Form($db);
 
-llxHeader('','Produit','');
+llxHeader('','Ludothèque','');
 
 $ludoHead = ludothequeAdminPrepareHead();
 
@@ -349,10 +385,10 @@ if ($action == 'info' && ! empty($id))
     
     dol_banner_tab($object, 'action=info&id', $linkback, ($user->societe_id?0:1), 'rowid', 'libelle');
     
-    /*print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
+    print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
     print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-    print '<input type="hidden" name="action" value="edit">';
-    print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';*/
+    print '<input type="hidden" name="action" value="command">';
+    print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
     
     
     print '<input type="hidden" name="id" value="'.$object->rowid.'">';
@@ -393,7 +429,7 @@ if ($action == 'info' && ! empty($id))
     print '<a class="button" href="ludotheque_list.php">Retour liste</a>';
     print '</div>';
         
-    print '</form><br>';
+    print '<br>';
     
 
 //  ---------------------------- Affichage la liste des produit de la ludothèque "$id" ----------------------------
@@ -401,6 +437,7 @@ if ($action == 'info' && ! empty($id))
     print load_fiche_titre($langs->trans("ProduitsInLudo"));
     $actionLudotheque = new ActionsLudotheque($db);
     $produit = new Produit($db);
+    $tabNull = $produit->getAllNullEmplacement();
     
     // --------------------- Requête ---------------------
     $limit = 26;
@@ -409,10 +446,37 @@ if ($action == 'info' && ! empty($id))
     $sql .= ' INNER JOIN '.MAIN_DB_PREFIX.'ludotheque_c_categorie_produit as cp ON p.fk_categorie=cp.rowid';
     $sql .= ' WHERE l.rowid='.$id.' ORDER BY p.rowid ASC LIMIT '.$limit.';';
     
-    $actionLudotheque->printList($sql, $produit);
+    print '<div class="div-table-responsive">';
+    
+    print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
+    print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+    print '<input type="hidden" name="action" value="addProduitInOneLudo">';
+    
+    if ($tabNull !== -1)
+    {
+        print '<div>';
+    
+        print $langs->trans('AddProduit');
+        print $form->selectarray('idProduit', $tabNull);
+        //print ' &nbsp; <a class="button" href="ludotheque_card.php?action=addProduitInOneLudo">Ajouter</a>';
+        print ' &nbsp; <input type="submit" class="button" name="addProduit" value="Ajouter">';
+        
+        print '</div><br>';
+    }
+    
+    
+    $nbLigne = $actionLudotheque->printList($sql, $produit, $langs);
     //$actionLudotheque->test($produit, $extrafields);
     
+    if ($nbLigne != 0)
+    {
+        print '<br><div class="center">';
+        print '<input type="submit" class="button" name="command" value="'.dol_escape_htmltag($langs->trans("Command")).'">';
+        print '</div>';
+    }
     
+    print '</form>';
+    print '</div>';
 }
 
 // Part to create

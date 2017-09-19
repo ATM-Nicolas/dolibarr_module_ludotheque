@@ -57,6 +57,8 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
 dol_include_once('/ludotheque/class/produit.class.php');
 
+dol_include_once('/ludotheque/class/actions_ludotheque.class.php');
+
 // Load traductions files requiredby by page
 $langs->loadLangs(array("ludotheque","other"));
 
@@ -204,7 +206,7 @@ foreach($object->fields as $key => $val)
 {
     $sql.='t.'.$key.', ';
 }
-$sql.='l.libelle as lib_cat, ';
+$sql.='cp.libelle as lib_cat, ';
 // Add fields from extrafields
 foreach ($extrafields->attribute_label as $key => $val) $sql.=($extrafields->attribute_type[$key] != 'separate' ? ", ef.".$key.' as options_'.$key : '');
 // Add fields from hooks
@@ -214,7 +216,7 @@ $sql.=$hookmanager->resPrint;
 $sql=preg_replace('/, $/','', $sql);
 $sql.= " FROM ".MAIN_DB_PREFIX."ludotheque_produit as t";
 
-$sql .= ' INNER JOIN '.MAIN_DB_PREFIX.'ludotheque_ludotheque as l ON t.fk_emplacement=l.rowid';
+$sql .= ' LEFT JOIN '.MAIN_DB_PREFIX.'ludotheque_ludotheque as l ON t.fk_emplacement=l.rowid';
 $sql .= ' INNER JOIN '.MAIN_DB_PREFIX.'ludotheque_c_categorie_produit as cp ON t.fk_categorie=cp.rowid';
 
 if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label)) $sql.= " INNER JOIN ".MAIN_DB_PREFIX."ludotheque as l on (t.fk_emplacement = l.rowid)";
@@ -382,6 +384,7 @@ foreach($object->fields as $key => $val)
     if (in_array($val['type'], array('timestamp'))) $align.=' nowrap';
     if (! empty($arrayfields['t.'.$key]['checked'])) print '<td class="liste_titre'.($align?' '.$align:'').'"><input type="text" class="flat maxwidth75" name="search_'.$key.'" value="'.dol_escape_htmltag($search[$key]).'"></td>';
 }
+
 // Extra fields
 if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label))
 {
@@ -426,14 +429,13 @@ print '</td>';
 print '</tr>'."\n";
 
 
+
 // Fields title label
 // --------------------------------------------------------------------
 print '<tr class="liste_titre">';
 
-//var_dump($object->fields);
 foreach($object->fields as $key => $val)
 {
-    //var_dump($key);
     if (in_array($key, array('date_creation', 'tms', 'import_key', 'status'))) continue;
     $align='';
     if (in_array($val['type'], array('date','datetime','timestamp'))) $align='center';
@@ -479,7 +481,17 @@ foreach ($extrafields->attribute_computed as $key => $val)
     if (preg_match('/\$object/',$val)) $needToFetchEachLine++;  // There is at least one compute field that use $object
 }
 
+/*print '</table>';
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// ----------------------------------- ICI -----------------------------------
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 
+$actionLudo = new ActionsLudotheque($db);
+$actionLudo->printList($sql, $object, $langs);
+
+print '<table class="tagtable liste">';*/
 // Loop on record
 // --------------------------------------------------------------------
 $i=0;
@@ -518,7 +530,7 @@ while ($i < min($num, $limit))
                         $lien = true;
                     }
                     
-                    if ($val['label'] == 'Emplacement') print $object->getOneEmplacementLibelle($obj->$key);
+                    if ($val['label'] == 'Emplacement' && $obj->fk_emplacement != null) print $object->getOneEmplacementLibelle($obj->$key);
                     else if ($val['label'] == 'Categorie') print $object->getOneCategorieLibelle($obj->$key);
                     else print $obj->$key;
                         
