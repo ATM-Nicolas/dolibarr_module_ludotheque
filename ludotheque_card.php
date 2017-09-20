@@ -230,6 +230,14 @@ if (empty($reshook))
 	    $produit = new Produit($db);
 	    $produit->fetch(GETPOST('idProduit'));
 	    
+	    if (empty($produit->rowid))
+	    {
+	        setEventMessages($langs->trans("CantAddNullProduit"), null, 'errors');
+	        $urltogo=$backtopage?$backtopage:dol_buildpath('/ludotheque/ludotheque_card.php?action=info&id='.$id,1);
+	        header("Location: ".$urltogo);
+	        exit;
+	    }
+	    
 	    $object->fetch($id);
 	    $result = $produit->update($user, $produit->rowid, $produit->fk_categorie, $produit->libelle, $produit->description, $object->rowid);
 	    if ($result == true)
@@ -448,7 +456,7 @@ if ($action == 'info' && ! empty($id))
 //  ---------------------------- Affichage la liste des produit de la ludothèque "$id" ----------------------------
     
     print load_fiche_titre($langs->trans("ProduitsInLudo"));
-    $actionLudotheque = new ActionsLudotheque($db);
+    //$actionLudotheque = new ActionsLudotheque($db);
     $produit = new Produit($db);
     $tabNull = $produit->getAllNullEmplacement();
     
@@ -473,13 +481,13 @@ if ($action == 'info' && ! empty($id))
         print $langs->trans('AddProduit');
         print $form->selectarray('idProduit', $tabNull);
         //print ' &nbsp; <a class="button" href="ludotheque_card.php?action=addProduitInOneLudo">Ajouter</a>';
-        print ' &nbsp; <input type="submit" class="button" name="addProduit" value="Ajouter">';
+        print ' &nbsp; <input type="submit" class="button" name="addProduit" value="'.$langs->trans("Add").'">';
         
         print '</div><br>';
     }
     print '</form>';
     
-    $nbLigne = $actionLudotheque->printList($sql, $produit, $langs);
+    $nbLigne = printList($db, $sql, $produit, $langs);
     //$actionLudotheque->test($produit, $extrafields);
     
     print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';

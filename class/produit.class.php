@@ -380,8 +380,7 @@ class Produit extends CommonObject
 	    $num = $this->db->num_rows($res);
 	    if ($num == 0)
 	    {
-	        dol_print_error($this->db);
-	        exit;
+	        return -1;
 	    }
 	    
 	    $obj = $this->db->fetch_object($res);
