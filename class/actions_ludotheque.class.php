@@ -510,6 +510,7 @@ class ActionsLudotheque
 	    print '</form>'."\n";
 	}
 	
+	
 	// Affiche une liste d'objet du type de $object
 	public function printList($sql, &$object, $langs)
 	{
@@ -517,23 +518,6 @@ class ActionsLudotheque
 	    $objClass = get_class($object);
 	    $form = new Form($this->db);
 	    $produit = new Produit($this->db);
-	    //$tab = $produit->getAllNullEmplacement();
-	    
-	    /*
-	    print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
-	    print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-	    print '<input type="hidden" name="action" value="addProduitInOneLudo">';
-	    */
-	    
-	    /*print '<div>';
-	    
-	    print $langs->trans('AddProduit');
-	    print $form->selectarray('idProduit', $tab);
-	    print ' &nbsp; <a class="button" href="ludotheque_card.php?action=addProduitInOneLudo">Ajouter</a>';
-	    
-	    print '</div><br>';*/
-	    
-	    //print '</form>';
 	    
 	    print '<table class="tagtable liste'.($moreforfilter?" listwithfilterbefore":"").'">'."\n";
 	    
@@ -543,34 +527,6 @@ class ActionsLudotheque
 	    
 	    if ($objClass == 'Produit');
 	    {
-	        
-	        if (GETPOST('id'))
-	        {
-	            /*print '<tr class="liste_titre">';
-    	        
-    	        // TODO: Afficher un select avec tous les produits déjà crées et qui ne sont pas 
-    	        
-    	        foreach($produit->fields as $key => $val)
-    	        {
-    	            if (in_array($key, array('rowid', 'tms', 'date_creat', 'fk_user_creat', 'fk_user_modif'))) continue;
-    	            
-    	            if (in_array($key, array('date_achat'))) print '<input type="hidden" name="'.$key.'" value="null">';
-    	            else 
-    	            {
-    	                print '<th>';
-    	                if ($key == 'fk_emplacement')
-    	                    print '<input type="hidden" name="'.$key.'" value="'.$produit->getOneEmplacementLibelle(GETPOST('id')).'">';
-    	                else 
-    	                    print '<input type="text" name="'.$key.'"';
-    	                
-    	                print '</th>';
-    	            }
-    	        }
-    	        
-    	        print '</tr>';
-    	        */
-	        }
-	        
 	        foreach($produit->fields as $key => $val)
 	        {
 	            // If $val['visible']==0, then we never show the field
@@ -587,26 +543,6 @@ class ActionsLudotheque
 	            if (! empty($arrayfields['p.'.$key]['checked'])) print getTitleFieldOfList($arrayfields['p.'.$key]['label'], 0, $_SERVER['PHP_SELF'], 'p.'.$key, '', $param, ($align?'class="'.$align.'"':''), $sortfield, $sortorder, $align.' ')."\n";
 	        }
 	    }
-	    /*if ($objClass == 'Ludotheque')   // get_class($object) = 'Ludotheque'
-	    {
-	        $ludo = new Ludotheque($this->db);
-	        
-	        foreach($ludo->fields as $key => $val)
-	        {
-	            // If $val['visible']==0, then we never show the field
-	            if (! empty($val['visible'])) $arrayfields['p.'.$key]=array('label'=>$val['label'], 'checked'=>(($val['visible']<0)?0:1), 'enabled'=>$val['enabled']);
-	        }
-	        
-	        // ----------------------------------- Titres -----------------------------------
-	        print '<tr class="liste_titre">';
-	        foreach($ludo->fields as $key => $val)
-	        {
-	            $align='';
-	            if (in_array($val['type'], array('date','datetime','timestamp'))) $align='center';
-	            if (in_array($val['type'], array('timestamp'))) $align.='nowrap';
-	            if (! empty($arrayfields['p.'.$key]['checked'])) print getTitleFieldOfList($arrayfields['p.'.$key]['label'], 0, $_SERVER['PHP_SELF'], 'p.'.$key, '', $param, ($align?'class="'.$align.'"':''), $sortfield, $sortorder, $align.' ')."\n";
-	        }
-	    }*/
 	    
 	    // ----------------------------------- Exécution de la requête -----------------------------------
 	    $res = $this->db->query($sql);
@@ -643,12 +579,7 @@ class ActionsLudotheque
 	            if ($key == 'libelle')
 	            {
 	                $lien == true;
-	                print '<a href="';
-	                
-	                if ($objClass == 'Produit') print 'produit';
-	                else print 'ludotheque';
-	                
-	                print '_card.php?action=info&id='.$obj->rowid.'">';
+	                print '<a href="produit_card.php?action=info&id='.$obj->rowid.'">';
 	            }
 	            
 	            if (in_array($key, array('date_achat'))) print dol_print_date($this->db->jdate($obj->$key), 'dayhour');
@@ -662,22 +593,10 @@ class ActionsLudotheque
 	        
 	    }
 	    
-	    if ($num == 0)
-	    {
-	        $colspan=1;
-	        foreach($arrayfields as $key => $val) { if (! empty($val['checked'])) $colspan++; }
-	        // TODO: Régler le problème avec la variable $langs
-	        print '<tr><td colspan="'.$colspan.'" class="opacitymedium">'.$langs->trans("NoRecordFound").'</td></tr>';
-	    }
-	    
-	    
 	    print '</table>'."\n";
-	    /*
-	    print '</div>'."\n";
-	    */
 	    return $num;
 	}
-
+	
 	/**
 	 * Overloading the doActions function : replacing the parent's function with the one below
 	 *

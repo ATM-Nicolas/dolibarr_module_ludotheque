@@ -359,8 +359,6 @@ if ($action == 'moreInfo' && ! empty($id))
     
     dol_banner_tab($object, 'action=moreInfo&id', $linkback, ($user->societe_id?0:1), 'rowid', 'libelle');
     
-    dol_fiche_head('', array());
-    
     print '<table class="border centpercent">'."\n";
     foreach($object->fields as $key => $val)
     {
@@ -430,7 +428,9 @@ if ($action == 'info' && ! empty($id))
                 print $object->libelle;
                 break;
             case 'fk_gerant':
+                print '<a href="../../societe/card.php?socid='.$object->fk_gerant.'">';
                 print $object->getSocieteLibelle($object->fk_gerant);
+                print '</a>';
                 break;
             default:
                 print '';
@@ -465,7 +465,7 @@ if ($action == 'info' && ! empty($id))
     $sql = 'SELECT p.rowid, p.libelle as libelle, cp.libelle as fk_categorie, p.description, p.date_achat, l.libelle as fk_emplacement';
     $sql .= ' FROM '.MAIN_DB_PREFIX.'ludotheque_produit as p INNER JOIN '.MAIN_DB_PREFIX.'ludotheque_ludotheque as l ON p.fk_emplacement=l.rowid';
     $sql .= ' INNER JOIN '.MAIN_DB_PREFIX.'ludotheque_c_categorie_produit as cp ON p.fk_categorie=cp.rowid';
-    $sql .= ' WHERE l.rowid='.$id.' ORDER BY p.rowid ASC LIMIT '.$limit.';';
+    $sql .= ' WHERE l.rowid='.$id.' ORDER BY p.rowid ASC';
     
     print '<div class="div-table-responsive">';
     
@@ -487,8 +487,28 @@ if ($action == 'info' && ! empty($id))
     }
     print '</form>';
     
-    $nbLigne = printList($db, $sql, $produit, $langs);
-    //$actionLudotheque->test($produit, $extrafields);
+    $TParam = array();
+    
+    $TParam['sql'] = $sql;
+    $TParam['limit'] = $limit;
+    $TParam['offset'] = $offset;
+    $TParam['search'] = $search;
+    $TParam['search_array_options'] = $search_array_options;
+    $TParam['parameters'] = $parameters;
+    $TParam['hookmanager'] = $hookmanager;
+    $TParam['form'] = $form;
+    $TParam['extrafields'] = $extrafields;
+    $TParam['arrafields'] = $arrayfields;
+    $TParam['title'] = $title;
+    $TParam['page'] = $page;
+    $TParam['url'] = $_SERVER['PHP_SELF'];
+    $TParam['param'] = $param;
+    $TParam['sortfield'] = $sortfield;
+    $TParam['sortorder'] = $sortorder;
+    $TParam['action'] = $action;
+    
+    $nbLigne = printList($user, $conf, $langs, $db, $object, $TParam);
+    
     
     print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
     print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
