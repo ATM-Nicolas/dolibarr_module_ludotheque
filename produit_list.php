@@ -219,6 +219,8 @@ $sql.= " FROM ".MAIN_DB_PREFIX."ludotheque_produit as t";
 $sql .= ' LEFT JOIN '.MAIN_DB_PREFIX.'ludotheque_ludotheque as l ON t.fk_emplacement=l.rowid';
 $sql .= ' INNER JOIN '.MAIN_DB_PREFIX.'ludotheque_c_categorie_produit as cp ON t.fk_categorie=cp.rowid';
 
+$sql .= ' INNER JOIN '.MAIN_DB_PREFIX.'user as uc ON t.fk_user_creat=uc.rowid';
+$sql .= ' INNER JOIN '.MAIN_DB_PREFIX.'user as um ON t.fk_user_modif=um.rowid';
 if (is_array($extrafields->attribute_label) && count($extrafields->attribute_label)) $sql.= " INNER JOIN ".MAIN_DB_PREFIX."ludotheque as l on (t.fk_emplacement = l.rowid)";
 $sql.= " WHERE 1 IN (".getEntity('myobject').")";
 
