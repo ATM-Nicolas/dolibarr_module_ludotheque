@@ -371,7 +371,8 @@ class modLudotheque extends DolibarrModules
 		// Create extrafields
 		include_once DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php';
 		$extrafields = new ExtraFields($this->db);
-		//$result1=$extrafields->addExtraField('myattr1', "New Attr 1 label", 'boolean', 1, 3, 'thirdparty');
+		$param = unserialize('a:1:{s:7:"options";a:1:{s:35:"ludotheque_ludotheque:libelle:rowid";N;}}');
+		$result1=$extrafields->addExtraField('fk_ludotheque', "Ludotheque", 'sellist', 0, 10, 'commande', 0, 0, 'null', $param);
 		//$result2=$extrafields->addExtraField('myattr2', "New Attr 2 label", 'string', 1, 10, 'project');
 
 		return $this->_init($sql, $options);

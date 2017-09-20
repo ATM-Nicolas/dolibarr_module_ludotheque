@@ -255,6 +255,9 @@ class Produit extends CommonObject
 	
 	function getOneEmplacementLibelle($rowid)
 	{
+	    if (! $rowid)
+	        return '';
+	    
 	    $limit = 26;
 	    $sql = 'SELECT l.rowid, l.libelle';
 	    /*foreach($this->fields as $key => $val)
@@ -540,7 +543,7 @@ class Produit extends CommonObject
 	{
 		global $langs;
 
-		if ($mode == 0)
+		/*if ($mode == 0)
 		{
 			$prefix='';
 			if ($status == 1) return $langs->trans('Enabled');
@@ -575,7 +578,7 @@ class Produit extends CommonObject
 		{
 			if ($status == 1) return $langs->trans('Enabled').' '.img_picto($langs->trans('Enabled'),'statut4');
 			if ($status == 0) return $langs->trans('Disabled').' '.img_picto($langs->trans('Disabled'),'statut5');
-		}
+		}*/
 	}
 
 

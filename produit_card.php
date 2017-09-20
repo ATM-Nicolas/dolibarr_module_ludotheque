@@ -52,6 +52,8 @@ if (! $res && file_exists("../../../main.inc.php")) $res=@include("../../../main
 if (! $res) die("Include of main fails");
 
 include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
+include_once(DOL_DOCUMENT_ROOT.'/core/class/doleditor.class.php');
+
 dol_include_once('/ludotheque/lib/produit.lib.php');
 
 dol_include_once('/ludotheque/class/produit.class.php');
@@ -200,7 +202,7 @@ if (empty($reshook))
 
 		if (! $error)
 		{
-			$result=$object->update($id, $object->fk_categorie, $object->libelle, $object->description, $object->fk_emplacement);
+			$result=$object->update($user, $id, $object->fk_categorie, $object->libelle, $object->description, $object->fk_emplacement);
 			if ($result > 0)
 			{
 			    //$action='info';
@@ -437,7 +439,12 @@ if ($action == 'create')
 	    {
 	        print '<tr><td class="titlefieldcreate fieldrequired">'.$langs->trans($val['label']).'</td>';
 	        
-	        print '<td><textarea class="quatrevingtpercent" name="'.$key.'" id="'.$key.'" style="height: 60px;"></textarea>';
+	        print '<td>';
+	        
+	        $doleditor = new DolEditor('description', '', '', 80, 'dolibarr_notes', 'In', 0, false, true, ROWS_3, '90%');
+	        print $doleditor->Create(1);
+	        
+	        //print '<textarea class="quatrevingtpercent" name="'.$key.'" id="'.$key.'" style="height: 60px;"></textarea>';
 	        print '</td></tr>';
 	    }
 	    else
@@ -492,7 +499,7 @@ if (($id || $ref) && $action == 'edit')
 	    // Sélection de l'emplacement dans une liste déroulante
 	    if (in_array($key, array('fk_emplacement')))
 	    {
-	        print '<tr><td class="titlefieldcreate fieldrequired">'.$langs->trans($val['label']).'</td>';
+	        print '<tr><td class="titlefieldcreate">'.$langs->trans($val['label']).'</td>';
 	        print '<td>';
 	        
 	        print $form->selectarray('fk_emplacement', $tab, $object->fk_emplacement);
@@ -514,6 +521,9 @@ if (($id || $ref) && $action == 'edit')
 	    else if (in_array($key, array('description')))
 	    {
 	        print '<tr><td class="titlefieldcreate fieldrequired">'.$langs->trans($val['label']).'</td>';
+	        
+	        /*$doleditor = new DolEditor('description', $val, '', 80, 'dolibarr_notes', 'In', 0, false, true, ROWS_3, '90%');
+	        print $doleditor->Create(1);*/
 	        
 	        print '<td><textarea class="quatrevingtpercent" name="'.$key.'" id="'.$key.'" style="height: 60px;">'.$object->$key.'</textarea>';
 	        print '</td></tr>';

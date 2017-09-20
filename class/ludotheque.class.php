@@ -433,7 +433,7 @@ class Ludotheque extends CommonObject
 	{
 		global $langs;
 
-		if ($mode == 0)
+		/*if ($mode == 0)
 		{
 			$prefix='';
 			if ($status == 1) return $langs->trans('Enabled');
@@ -468,7 +468,7 @@ class Ludotheque extends CommonObject
 		{
 			if ($status == 1) return $langs->trans('Enabled').' '.img_picto($langs->trans('Enabled'),'statut4');
 			if ($status == 0) return $langs->trans('Disabled').' '.img_picto($langs->trans('Disabled'),'statut5');
-		}
+		}*/
 	}
 
 

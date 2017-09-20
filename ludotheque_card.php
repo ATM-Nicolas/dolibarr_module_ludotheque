@@ -51,6 +51,8 @@ if (! $res && file_exists("../../main.inc.php")) $res=@include("../../main.inc.p
 if (! $res && file_exists("../../../main.inc.php")) $res=@include("../../../main.inc.php");
 if (! $res) die("Include of main fails");
 
+require_once DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php';
+
 include_once(DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php');
 dol_include_once('/ludotheque/lib/ludotheque.lib.php');
 
@@ -146,7 +148,6 @@ if (empty($reshook))
 	    
 	    // Creation d'une nouvelle commande avec pour client, le tiers lié à la Ludothèque => function create(...)
 	    $command = new Commande($db);
-	    
 	    $command->idLudo = $id;
 	    $command->socid = $object->fk_gerant;
 	    $command->date_commande = $db->idate(dol_now());
@@ -155,19 +156,31 @@ if (empty($reshook))
 	    
 	    // Ajout d'autant de ligne sur la commande qu'il y a de produit dans la Ludothèque => function addline(...)
 	    $tabLudoProduits = $object->getAllProduitInOneLudo($id);
+	    //var_dump($tabLudoProduits);
 	    
 	    $i = 0;
 	    while($i < count($tabLudoProduits))
 	    {
-	        $command->addline($tabLudoProduits[$i]['libelle'], $pu_ht, $qty, $txtva);
+	        $command->addline($tabLudoProduits[$i]['libelle'], $pu_ht, $qty, $txtva);//,0,0,0,0,0,0,'HT',0,'','',0,-1,0,0,null,0,'',array('options_idLudo' => $id));//,null,'',$command->idLudo);
+	        
+	        //$command->insertExtraField();
 	        $i++;
-	    }
+	    }	   
 	    
+	    $command->fetch_optionals($command->rowid);
 	    
+	    $command->array_options['options_fk_ludotheque'] = $id;
+	    
+	    $command->update_extrafields($user);
+	    
+	    /*
+	    var_dump($command);
+	    exit();
+	    */
 	    
 	    setEventMessages($langs->trans('ProduitsCommandDone', $object->getSocieteLibelle($object->fk_gerant)), array());
 	    
-	    $urltogo=$backtopage?$backtopage:dol_buildpath('/../commande/card.php?id='.$idCommande,1);
+	    $urltogo=$backtopage?$backtopage:dol_buildpath('/../commande/card.php?id='.$idCommande.'&idLudo='.$command->idLudo,1);
 	    header("Location: ".$urltogo);
 	    exit;
 	}
@@ -452,6 +465,7 @@ if ($action == 'info' && ! empty($id))
     print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
     print '<input type="hidden" name="action" value="addProduitInOneLudo">';
     
+    
     if ($tabNull !== -1)
     {
         print '<div>';
@@ -463,10 +477,15 @@ if ($action == 'info' && ! empty($id))
         
         print '</div><br>';
     }
-    
+    print '</form>';
     
     $nbLigne = $actionLudotheque->printList($sql, $produit, $langs);
     //$actionLudotheque->test($produit, $extrafields);
+    
+    print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
+    print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+    print '<input type="hidden" name="action" value="command">';
+    print '<input type="hidden" name="id" value="'.$id.'">';
     
     if ($nbLigne != 0)
     {

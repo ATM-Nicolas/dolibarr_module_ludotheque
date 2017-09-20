@@ -33,12 +33,15 @@
  */
 
 require_once DOL_DOCUMENT_ROOT.'/core/triggers/dolibarrtriggers.class.php';
+require_once DOL_DOCUMENT_ROOT.'/commande/class/commande.class.php';
+dol_include_once('ludotheque/class/produit.class.php');
+dol_include_once('ludotheque/class/ludotheque.class.php');
 
 
 /**
  *  Class of triggers for MyModule module
  */
-class InterfaceMyModuleTriggers extends DolibarrTriggers
+class InterfaceLudothequeTriggers extends DolibarrTriggers
 {
 	/**
 	 * @var DoliDB Database handler
@@ -81,7 +84,7 @@ class InterfaceMyModuleTriggers extends DolibarrTriggers
 	{
 		return $this->description;
 	}
-
+    
 
 	/**
 	 * Function called when a Dolibarrr business event is done.
@@ -101,7 +104,8 @@ class InterfaceMyModuleTriggers extends DolibarrTriggers
 
 	    // Put here code you want to execute when a Dolibarr business events occurs.
 		// Data and type of action are stored into $object and $action
-
+        
+        
         switch ($action) {
 
             // Users
@@ -157,8 +161,26 @@ class InterfaceMyModuleTriggers extends DolibarrTriggers
 
 		        // Customer orders
 		    case 'ORDER_CREATE':
+                //$object->idLudo = GETPOST('id');
+                //var_dump($object);
+		        break;
 		    case 'ORDER_CLONE':
 		    case 'ORDER_VALIDATE':
+		        // TODO: Retrouver l'id de la ludothèque depuis laquelle on a fait la commande
+		        $produit = new Produit($this->db);
+		        $ludo = new Ludotheque($this->db);
+		        
+		        $idLudo = $object->array_options['options_fk_ludotheque'];
+		        $allProduits = $ludo->getAllProduitInOneLudo($idLudo);
+		        
+		        $i=0;
+		        while($i < count($allProduits))
+		        {
+		            $produit->updateDate($allProduits[$i]['rowid']);
+		            $i++;
+		        }
+		        
+		        break;
 		    case 'ORDER_DELETE':
 		    case 'ORDER_CANCEL':
 		    case 'ORDER_SENTBYMAIL':
